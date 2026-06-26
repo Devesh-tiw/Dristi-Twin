@@ -2,371 +2,354 @@
 <html lang="en">
 
 <head>
-    
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>DRISHTI-TWIN — AI Climate Digital Twin of India</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DRISHTI-TWIN — AI Climate Digital Twin of India | ISRO BAH 2026</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
-    <link rel="stylesheet" href="index.css" />
+    
 </head>
 
 <body>
 
     <!-- HEADER -->
-    <header>
-        <div class="logo">DRISHTI<span>-TWIN</span> <sub>v2.1</sub></div>
-        <div class="live-pill">● LIVE</div>
-        <div class="badge gold">ISRO BAH 2026</div>
-        <div class="badge saffron">PS-05</div>
-        <div class="header-spacer"></div>
-        <div class="data-tags">
-            <div class="dtag">INSAT-3DR</div>
-            <div class="dtag">IMD 0.25°</div>
-            <div class="dtag">ERA5 Reanalysis</div>
-            <div class="dtag">ConvLSTM v3</div>
-        </div>
-        <div id="clock">--:--:-- IST</div>
-    </header>
+    <div id="header">
+        <div class="logo">🛰 <span>DRISHTI</span>-TWIN <span
+                style="opacity:.5;font-weight:400;font-size:12px">v2.2</span></div>
+        <span class="pill pill-live">● LIVE</span>
+        <span class="pill pill-isro">ISRO BAH 2026</span>
+        <span class="pill pill-ps">PS-05</span>
+        <span class="data-tag">INSAT-3DR</span>
+        <span class="data-tag">IMD 0.25°</span>
+        <span class="data-tag">ERA5</span>
+        <span class="data-tag">NCUM</span>
+        <span class="data-tag">ConvLSTM v3</span>
+        <span id="clock">IST --:--:--</span>
+    </div>
 
-    <div class="main">
+    <!-- MAIN -->
+    <div id="main">
 
         <!-- LEFT PANEL -->
-        <div class="panel panel-left">
+        <div id="left-panel">
 
-            <div class="panel-section">
-                <div class="section-label"><span class="step-num">1</span>Source Region</div>
-                <select id="sourceRegion">
-                    <option value="">— Select State —</option>
-                    <option value="AP">Andhra Pradesh</option>
-                    <option value="AR">Arunachal Pradesh</option>
-                    <option value="AS">Assam</option>
-                    <option value="BR">Bihar</option>
-                    <option value="CG">Chhattisgarh</option>
-                    <option value="GA">Goa</option>
-                    <option value="GJ">Gujarat</option>
-                    <option value="HR">Haryana</option>
-                    <option value="HP">Himachal Pradesh</option>
-                    <option value="JK">Jammu & Kashmir</option>
-                    <option value="JH">Jharkhand</option>
-                    <option value="KA">Karnataka</option>
-                    <option value="KL">Kerala</option>
-                    <option value="LA">Ladakh</option>
-                    <option value="MP">Madhya Pradesh</option>
-                    <option value="MH">Maharashtra</option>
-                    <option value="MN">Manipur</option>
-                    <option value="ML">Meghalaya</option>
-                    <option value="MZ">Mizoram</option>
-                    <option value="NL">Nagaland</option>
-                    <option value="OD">Odisha</option>
-                    <option value="PB">Punjab</option>
-                    <option value="RJ">Rajasthan</option>
-                    <option value="SK">Sikkim</option>
-                    <option value="TN">Tamil Nadu</option>
-                    <option value="TS">Telangana</option>
-                    <option value="TR">Tripura</option>
-                    <option value="UP">Uttar Pradesh</option>
-                    <option value="UK">Uttarakhand</option>
-                    <option value="WB">West Bengal</option>
-                    <option value="AN">Andaman & Nicobar</option>
-                    <option value="CH">Chandigarh</option>
-                    <option value="DN">Dadra & Nagar Haveli</option>
-                    <option value="DD">Daman & Diu</option>
-                    <option value="DL">Delhi (NCT)</option>
-                    <option value="LD">Lakshadweep</option>
-                    <option value="PY">Puducherry</option>
-                </select>
+            <!-- VIEW TOGGLE -->
+            <div id="view-toggle">
+                <button class="view-btn active" id="btn-india" onclick="switchView('india')">🇮🇳 India (High-Res
+                    Twin)</button>
+                <button class="view-btn" id="btn-global" onclick="switchView('global')">🌍 Global (Macro
+                    Drivers)</button>
             </div>
 
-            <div class="panel-section">
-                <div class="section-label"><span class="step-num">2</span>Climate Scenario</div>
-                <div class="scenario-grid">
-                    <button class="scenario-btn active-heat" id="btn-heat" onclick="setScenario('heat')">
-                        <span class="icon">🔥</span>Heatwave
-                    </button>
-                    <button class="scenario-btn" id="btn-rain" onclick="setScenario('rain')">
-                        <span class="icon">🌧</span>Monsoon
-                    </button>
-                    <button class="scenario-btn" id="btn-cyclone" onclick="setScenario('cyclone')">
-                        <span class="icon">🌀</span>Cyclone
-                    </button>
-                    <button class="scenario-btn" id="btn-fog" onclick="setScenario('fog')">
-                        <span class="icon">🌫</span>Fog / Cold
-                    </button>
+            <!-- INDIA CONTROLS -->
+            <div class="india-only">
+                <div class="panel-section">
+                    <div class="section-title">Step 1 — Source Region</div>
+                    <label class="step-label">Select Source State / UT</label>
+                    <select class="control-select" id="source-region" onchange="sourceRegion=this.value;updateMap()">
+                        <option value="AP">Andhra Pradesh</option>
+                        <option value="AR">Arunachal Pradesh</option>
+                        <option value="AS">Assam</option>
+                        <option value="BR">Bihar</option>
+                        <option value="CG">Chhattisgarh</option>
+                        <option value="GA">Goa</option>
+                        <option value="GJ">Gujarat</option>
+                        <option value="HR">Haryana</option>
+                        <option value="HP">Himachal Pradesh</option>
+                        <option value="JK">Jammu & Kashmir</option>
+                        <option value="JH">Jharkhand</option>
+                        <option value="KA">Karnataka</option>
+                        <option value="KL">Kerala</option>
+                        <option value="LA">Ladakh</option>
+                        <option value="MP">Madhya Pradesh</option>
+                        <option value="MH">Maharashtra</option>
+                        <option value="MN">Manipur</option>
+                        <option value="ML">Meghalaya</option>
+                        <option value="MZ">Mizoram</option>
+                        <option value="NL">Nagaland</option>
+                        <option value="OD">Odisha</option>
+                        <option value="PB">Punjab</option>
+                        <option value="RJ">Rajasthan</option>
+                        <option value="SK">Sikkim</option>
+                        <option value="TN">Tamil Nadu</option>
+                        <option value="TS">Telangana</option>
+                        <option value="TR">Tripura</option>
+                        <option value="UP">Uttar Pradesh</option>
+                        <option value="UK">Uttarakhand</option>
+                        <option value="WB">West Bengal</option>
+                        <option value="AN">Andaman & Nicobar</option>
+                        <option value="CH">Chandigarh</option>
+                        <option value="DN">Dadra & Nagar Haveli</option>
+                        <option value="DD">Daman & Diu</option>
+                        <option value="DL">Delhi</option>
+                        <option value="LD">Lakshadweep</option>
+                        <option value="PY">Puducherry</option>
+                    </select>
+                </div>
+
+                <div class="panel-section">
+                    <div class="section-title">Step 2 — Scenario</div>
+                    <div class="scenario-grid">
+                        <button class="scenario-btn" id="sc-heat" onclick="selectScenario('heat')">🔥 Heatwave</button>
+                        <button class="scenario-btn" id="sc-rain" onclick="selectScenario('rain')">🌧 Monsoon</button>
+                        <button class="scenario-btn" id="sc-cyclone" onclick="selectScenario('cyclone')">🌀
+                            Cyclone</button>
+                        <button class="scenario-btn" id="sc-fog" onclick="selectScenario('fog')">🌫 Fog/Cold</button>
+                    </div>
+                </div>
+
+                <div class="panel-section">
+                    <div class="section-title">Parameters</div>
+                    <div class="slider-row">
+                        <label>Temp Shock (°C) <span id="temp-val">+0.0</span></label>
+                        <input type="range" id="temp-slider" min="-15" max="15" value="0" step="1"
+                            oninput="tempDelta=this.value/10;document.getElementById('temp-val').textContent=(tempDelta>=0?'+':'')+tempDelta.toFixed(1)">
+                    </div>
+                    <div class="slider-row" style="margin-top:8px">
+                        <label>Rainfall Intensity (%) <span id="rain-val">0%</span></label>
+                        <input type="range" id="rain-slider" min="-20" max="20" value="0" step="1"
+                            oninput="rainDelta=parseInt(this.value);document.getElementById('rain-val').textContent=(rainDelta>=0?'+':'')+rainDelta+'%'">
+                    </div>
+                    <div class="slider-row" style="margin-top:8px">
+                        <label>Wind Speed (km/h) <span id="wind-val">0</span></label>
+                        <input type="range" id="wind-slider" min="0" max="200" value="0" step="5"
+                            oninput="windDelta=parseInt(this.value);document.getElementById('wind-val').textContent=windDelta">
+                    </div>
+                </div>
+
+                <div class="panel-section">
+                    <button class="run-btn" id="run-btn" onclick="runSimulation()">▶ Run Digital Twin
+                        Simulation</button>
+                </div>
+
+                <div class="panel-section">
+                    <div class="section-title">Map Layers</div>
+                    <div class="toggle-row"><label>Temperature Field</label><label class="toggle"><input type="checkbox"
+                                id="tog-temp" checked onchange="updateMap()"><span class="toggle-slider"></span></label>
+                    </div>
+                    <div class="toggle-row"><label>Rainfall Layer</label><label class="toggle"><input type="checkbox"
+                                id="tog-rain" onchange="updateMap()"><span class="toggle-slider"></span></label></div>
+                    <div class="toggle-row"><label>EOF Mode Overlay</label><label class="toggle"><input type="checkbox"
+                                id="tog-eof" onchange="updateMap()"><span class="toggle-slider"></span></label></div>
+                    <div class="toggle-row"><label>Wind Vectors</label><label class="toggle"><input type="checkbox"
+                                id="tog-wind" onchange="updateMap()"><span class="toggle-slider"></span></label></div>
+                </div>
+
+                <div class="panel-section">
+                    <div class="section-title">Ripple Target</div>
+                    <select class="control-select" id="target-region" onchange="targetRegion=this.value;updateMap()">
+                        <option value="MH">Maharashtra</option>
+                        <option value="GJ">Gujarat</option>
+                        <option value="UP">Uttar Pradesh</option>
+                        <option value="MP">Madhya Pradesh</option>
+                        <option value="RJ">Rajasthan</option>
+                        <option value="TN">Tamil Nadu</option>
+                        <option value="KA">Karnataka</option>
+                        <option value="WB">West Bengal</option>
+                        <option value="OD">Odisha</option>
+                        <option value="PB">Punjab</option>
+                        <option value="HR">Haryana</option>
+                        <option value="BR">Bihar</option>
+                        <option value="TS">Telangana</option>
+                        <option value="KL">Kerala</option>
+                        <option value="AS">Assam</option>
+                        <option value="CG">Chhattisgarh</option>
+                        <option value="JH">Jharkhand</option>
+                        <option value="DL">Delhi</option>
+                    </select>
                 </div>
             </div>
 
-            <div class="panel-section">
-                <div class="section-label">Simulation Parameters</div>
-                <div class="slider-row">
-                    <div class="slider-header">
-                        <span class="slider-label">🌡 Temperature Shock</span>
-                        <span class="slider-val" id="tempVal">+0.0°C</span>
+            <!-- GLOBAL CONTROLS -->
+            <div class="global-only">
+                <div class="panel-section">
+                    <div class="section-title">Global Macro Phenomena</div>
+                    <div class="global-scenario-grid">
+                        <button class="global-scenario-btn" id="gs-enso" onclick="selectGlobalScenario('enso')">🌊 El
+                            Niño / La Niña Anomaly</button>
+                        <button class="global-scenario-btn" id="gs-iod" onclick="selectGlobalScenario('iod')">🌡 Indian
+                            Ocean Dipole</button>
+                        <button class="global-scenario-btn" id="gs-mjo" onclick="selectGlobalScenario('mjo')">🔄
+                            Madden-Julian Oscillation</button>
+                        <button class="global-scenario-btn" id="gs-jet" onclick="selectGlobalScenario('jet')">💨 Jet
+                            Stream Displacement</button>
                     </div>
-                    <input type="range" id="tempSlider" min="-15" max="15" value="0"
-                        oninput="tempDelta=this.value/10; document.getElementById('tempVal').textContent=(tempDelta>=0?'+':'')+tempDelta.toFixed(1)+'°C'" />
                 </div>
-                <div class="slider-row">
-                    <div class="slider-header">
-                        <span class="slider-label">💧 Rainfall Intensity</span>
-                        <span class="slider-val" id="rainVal">+0%</span>
+                <div class="panel-section">
+                    <div class="section-title">SST Anomaly (°C)</div>
+                    <div class="slider-row">
+                        <label>Ocean Surface Δ Temp <span id="sst-val">+0.0</span></label>
+                        <input type="range" min="-30" max="30" value="0" step="1"
+                            oninput="globalSSTDelta=this.value/10;document.getElementById('sst-val').textContent=(globalSSTDelta>=0?'+':'')+parseFloat(globalSSTDelta).toFixed(1);drawGlobalOverlay()">
                     </div>
-                    <input type="range" id="rainSlider" min="-20" max="20" value="0"
-                        oninput="rainDelta=parseInt(this.value); document.getElementById('rainVal').textContent=(rainDelta>=0?'+':'')+rainDelta+'%'" />
                 </div>
-                <div class="slider-row">
-                    <div class="slider-header">
-                        <span class="slider-label">💨 Wind Speed</span>
-                        <span class="slider-val" id="windVal">0 km/h</span>
-                    </div>
-                    <input type="range" id="windSlider" min="0" max="200" value="0"
-                        oninput="windDelta=parseInt(this.value); document.getElementById('windVal').textContent=windDelta+' km/h'" />
+                <div class="panel-section">
+                    <div class="section-title">Teleconnection Impact on India</div>
+                    <div style="font-size:9px;color:var(--text-secondary);line-height:1.6" id="telecon-text">Select a
+                        global driver to see modelled impact pathways on Indian monsoon onset, NEM, and extreme events
+                        via ConvLSTM teleconnection matrix.</div>
                 </div>
-            </div>
-
-            <div class="panel-section">
-                <button id="runBtn" onclick="runSimulation()">
-                    <span>▶</span> Run Digital Twin Simulation
-                </button>
-            </div>
-
-            <div class="panel-section">
-                <div class="section-label">Map Layers</div>
-                <div class="layer-toggles">
-                    <div class="toggle-row on" id="tog-temp" onclick="toggleLayer('temp')">
-                        <span class="toggle-label">🌡 Temperature Field</span>
-                        <div class="toggle-switch"></div>
-                    </div>
-                    <div class="toggle-row on" id="tog-rain" onclick="toggleLayer('rain')">
-                        <span class="toggle-label">💧 Rainfall Layer</span>
-                        <div class="toggle-switch"></div>
-                    </div>
-                    <div class="toggle-row" id="tog-eof" onclick="toggleLayer('eof')">
-                        <span class="toggle-label">〰 EOF Mode Overlay</span>
-                        <div class="toggle-switch"></div>
-                    </div>
-                    <div class="toggle-row on" id="tog-wind" onclick="toggleLayer('wind')">
-                        <span class="toggle-label">🌬 Wind Vectors</span>
-                        <div class="toggle-switch"></div>
+                <div class="panel-section">
+                    <div class="section-title">Data Sources</div>
+                    <div class="data-sources">
+                        <span class="ds-chip">NOAA ERSST v5</span><span class="ds-chip">HadSST4</span>
+                        <span class="ds-chip">CMIP6</span><span class="ds-chip">ERA5 Reanalysis</span>
+                        <span class="ds-chip">ECMWF S2S</span>
                     </div>
                 </div>
             </div>
 
-            <div class="panel-section">
-                <div class="section-label">Ripple Target</div>
-                <select id="targetRegion">
-                    <option value="UP">Uttar Pradesh</option>
-                    <option value="RJ">Rajasthan</option>
-                    <option value="MH">Maharashtra</option>
-                    <option value="MP">Madhya Pradesh</option>
-                    <option value="OD">Odisha</option>
-                    <option value="WB">West Bengal</option>
-                    <option value="GJ">Gujarat</option>
-                    <option value="TN">Tamil Nadu</option>
-                    <option value="KA">Karnataka</option>
-                    <option value="AP">Andhra Pradesh</option>
-                    <option value="TS">Telangana</option>
-                    <option value="KL">Kerala</option>
-                    <option value="PB">Punjab</option>
-                    <option value="HR">Haryana</option>
-                    <option value="BR">Bihar</option>
-                    <option value="JH">Jharkhand</option>
-                    <option value="CG">Chhattisgarh</option>
-                    <option value="AS">Assam</option>
-                </select>
-            </div>
-
-            <div class="panel-section">
-                <div class="section-label">Data Sources</div>
-                <div class="data-source-list">
-                    <div class="ds-item">
-                        <div class="ds-dot live"></div>INSAT-3DR LIVE (15-min)
-                    </div>
-                    <div class="ds-item">
-                        <div class="ds-dot ok"></div>IMD Gridded 0.25° Daily
-                    </div>
-                    <div class="ds-item">
-                        <div class="ds-dot ok"></div>ERA5 Reanalysis 1.0°
-                    </div>
-                    <div class="ds-item">
-                        <div class="ds-dot ok"></div>NCUM Model Output
-                    </div>
-                    <div class="ds-item">
-                        <div class="ds-dot ok"></div>ConvLSTM v3 (Local)
-                    </div>
+            <!-- INDIA DATA SOURCES (always show) -->
+            <div class="panel-section india-only">
+                <div class="section-title">Data Sources</div>
+                <div class="data-sources">
+                    <span class="ds-chip">INSAT-3DR LIVE</span><span class="ds-chip">IMD Grid 0.25°</span>
+                    <span class="ds-chip">ERA5</span><span class="ds-chip">NCUM</span>
+                    <span class="ds-chip">ConvLSTM v3</span>
                 </div>
             </div>
-
         </div>
-        <!-- /LEFT PANEL -->
 
         <!-- CENTER MAP -->
-        <div class="map-wrap">
+        <div id="center">
             <div id="map"></div>
-            <canvas id="phenomenaCanvas"></canvas>
+            <canvas id="canvas-overlay"></canvas>
 
-            <div class="map-infobar" id="mapInfoBar">
-                <span>Source: <span class="info-val" id="iSrc">—</span></span>
+            <div id="info-bar">
+                <span id="ib-source">SRC: —</span>
                 <span class="info-sep">|</span>
-                <span>Target: <span class="info-val" id="iTgt">—</span></span>
+                <span id="ib-target">TGT: —</span>
                 <span class="info-sep">|</span>
-                <span>Δ Anomaly: <span class="info-val" id="iAnomaly">—</span></span>
+                <span id="ib-anomaly">Δ —</span>
                 <span class="info-sep">|</span>
-                <span>EOF: <span class="info-val" id="iEof">Mode 3</span></span>
+                <span id="ib-eof">EOF —</span>
+                <span class="diff-pill" id="diff-pill">⚡ DIFF MAP ACTIVE</span>
             </div>
 
-            <div class="sim-badge" id="simBadge">🔄 ConvLSTM Forecasting — Day 1 of 3</div>
-            <div class="diff-pill" id="diffPill">⚡ DIFF MAP ACTIVE</div>
+            <div id="sim-badge">🔄 ConvLSTM Forecasting — Day <span id="sim-day">1</span> of 3</div>
 
-            <div class="map-legend" id="mapLegend">
-                <div class="legend-title" id="legTitle">Surface Temperature (°C)</div>
-                <div class="legend-bar" id="legBar"
-                    style="background: linear-gradient(90deg, #4FC3F7, #AED581, #FFF176, #FF7043, #B71C1C)"></div>
-                <div class="legend-labels"><span id="legMin">15°C</span><span id="legMid">30°C</span><span
-                        id="legMax">45°C</span></div>
+            <div class="map-legend">
+                <div style="font-size:8px;font-weight:700;color:var(--text-secondary);margin-bottom:2px"
+                    id="legend-title">Temperature (°C)</div>
+                <div class="legend-bar" id="legend-bar"
+                    style="background:linear-gradient(90deg,#0288D1,#43A047,#FDD835,#FF6D00,#FF1744)"></div>
+                <div class="legend-labels"><span id="leg-min">10°C</span><span id="leg-max">46°C</span></div>
             </div>
 
-            <div class="state-tooltip" id="stateTooltip">
-                <div class="tt-name" id="ttName">State</div>
-                <div class="tt-row"><span>Temperature</span><span class="tt-val" id="ttTemp">—</span></div>
-                <div class="tt-row"><span>Rainfall</span><span class="tt-val" id="ttRain">—</span></div>
-                <div class="tt-row"><span>Δ Anomaly</span><span class="tt-val" id="ttAnom">—</span></div>
-            </div>
+            <div id="map-tooltip"></div>
 
-            <div class="timeline-bar">
-                <div class="tl-label">FORECAST</div>
-                <div class="tl-days" id="tlDays">
-                    <div class="tl-day active">t+1</div>
-                    <div class="tl-day">t+2</div>
-                    <div class="tl-day">t+3</div>
-                    <div class="tl-day">t+4</div>
-                    <div class="tl-day">t+5</div>
+            <div id="timeline">
+                <span class="tl-label">Forecast:</span>
+                <button id="tl-play" onclick="togglePlay()">▶</button>
+                <div id="tl-track" onclick="seekTimeline(event)">
+                    <div id="tl-fill" style="width:0%"></div>
+                    <div id="tl-thumb" style="left:0%"></div>
                 </div>
-                <div class="tl-track">
-                    <div class="tl-fill" id="tlFill"></div>
-                    <div class="tl-thumb" id="tlThumb"></div>
+                <div class="tl-days" id="tl-days">
+                    <div class="tl-day active" onclick="setDay(0)">T+1</div>
+                    <div class="tl-day" onclick="setDay(1)">T+2</div>
+                    <div class="tl-day" onclick="setDay(2)">T+3</div>
+                    <div class="tl-day" onclick="setDay(3)">T+4</div>
+                    <div class="tl-day" onclick="setDay(4)">T+5</div>
                 </div>
-                <div class="tl-label" id="tlDayCounter">Day 0 / 5</div>
-                <button class="tl-play" id="tlPlay" onclick="togglePlay()">▶</button>
             </div>
         </div>
-        <!-- /CENTER -->
 
         <!-- RIGHT PANEL -->
-        <div class="panel panel-right">
-            <div class="rp-header">
-                <div class="rp-title">🌏 Ripple Effect Tracker</div>
-                <div class="rp-subtitle">Teleconnection Analysis</div>
-                <div class="rp-target-badge" id="rpTargetBadge">Target: Select a region</div>
-            </div>
+        <div id="right-panel">
 
-            <div class="mini-maps">
-                <div class="mini-map-card">
-                    <div class="mini-map-label">Baseline</div>
-                    <canvas class="mini-map" id="miniBaseline" width="110" height="80"></canvas>
-                </div>
-                <div class="mini-map-card">
-                    <div class="mini-map-label">Simulated</div>
-                    <canvas class="mini-map" id="miniSimulated" width="110" height="80"></canvas>
-                </div>
-            </div>
-
-            <div class="chart-section">
-                <div class="chart-header">
-                    <div class="chart-title">5-Day Temperature Forecast</div>
-                    <div class="chart-legend">
-                        <div class="cl-item">
-                            <div class="cl-dot" style="background:#1565C0"></div>Baseline
-                        </div>
-                        <div class="cl-item">
-                            <div class="cl-dot" style="background:#E65100"></div>Simulated
-                        </div>
+            <div class="rp-section">
+                <div class="rp-title">Ripple Effect Tracker — <span id="rp-target-name"
+                        style="color:var(--accent-blue);font-weight:800;text-transform:none">Maharashtra</span></div>
+                <div class="mini-maps">
+                    <div>
+                        <div class="mini-map-label">📊 Baseline</div>
+                        <canvas id="mini-base" width="120" height="90"></canvas>
+                    </div>
+                    <div>
+                        <div class="mini-map-label">⚡ Simulated</div>
+                        <canvas id="mini-sim" width="120" height="90"></canvas>
                     </div>
                 </div>
-                <canvas id="forecastChart" width="256" height="110" style="width:100%;display:block;"></canvas>
             </div>
 
-            <div class="panel-section" style="padding-top:8px;">
-                <div class="section-label">Risk Probabilities</div>
+            <div class="rp-section">
+                <div class="rp-title">5-Day Forecast</div>
+                <div class="chart-wrapper">
+                    <canvas id="forecast-chart" width="260" height="110"></canvas>
+                </div>
+                <div class="confidence-label">Model Confidence: 92% (ERA5 Assimilated)</div>
+            </div>
+
+            <div class="rp-section">
+                <div class="rp-title">Risk Probabilities</div>
                 <div class="risk-bars">
-                    <div class="risk-row">
-                        <div class="risk-header">
-                            <span class="risk-name">🔥 Heatwave</span>
-                            <span class="risk-pct" id="riskHeat" style="color:#FF3D00">18%</span>
-                        </div>
+                    <div class="risk-row"><span class="risk-name">Heatwave</span>
                         <div class="risk-track">
-                            <div class="risk-fill" id="rfHeat" style="width:18%;background:#FF3D00"></div>
-                        </div>
+                            <div class="risk-fill" id="risk-heat" style="width:30%;background:var(--heatwave)"></div>
+                        </div><span class="risk-val" id="rv-heat">30%</span>
                     </div>
-                    <div class="risk-row">
-                        <div class="risk-header">
-                            <span class="risk-name">🌊 Flood Probability</span>
-                            <span class="risk-pct" id="riskFlood" style="color:#0288D1">12%</span>
-                        </div>
+                    <div class="risk-row"><span class="risk-name">Flood</span>
                         <div class="risk-track">
-                            <div class="risk-fill" id="rfFlood" style="width:12%;background:#0288D1"></div>
-                        </div>
+                            <div class="risk-fill" id="risk-flood" style="width:15%;background:var(--monsoon)"></div>
+                        </div><span class="risk-val" id="rv-flood">15%</span>
                     </div>
-                    <div class="risk-row">
-                        <div class="risk-header">
-                            <span class="risk-name">🌀 Cyclone Risk</span>
-                            <span class="risk-pct" id="riskCyclone" style="color:#6A1B9A">5%</span>
-                        </div>
+                    <div class="risk-row"><span class="risk-name">Cyclone</span>
                         <div class="risk-track">
-                            <div class="risk-fill" id="rfCyclone" style="width:5%;background:#6A1B9A"></div>
-                        </div>
+                            <div class="risk-fill" id="risk-cycl" style="width:8%;background:var(--cyclone)"></div>
+                        </div><span class="risk-val" id="rv-cycl">8%</span>
                     </div>
-                    <div class="risk-row">
-                        <div class="risk-header">
-                            <span class="risk-name">❄ Cold Wave</span>
-                            <span class="risk-pct" id="riskCold" style="color:#546E7A">8%</span>
-                        </div>
+                    <div class="risk-row"><span class="risk-name">Cold Wave</span>
                         <div class="risk-track">
-                            <div class="risk-fill" id="rfCold" style="width:8%;background:#546E7A"></div>
-                        </div>
+                            <div class="risk-fill" id="risk-cold" style="width:12%;background:var(--fog)"></div>
+                        </div><span class="risk-val" id="rv-cold">12%</span>
                     </div>
                 </div>
             </div>
 
-            <div class="panel-section" style="padding-top:8px;border-bottom:none;">
-                <div class="section-label">Sector Impact</div>
+            <div class="rp-section">
+                <div class="rp-title">Sector Impact</div>
                 <div class="impact-grid">
                     <div class="impact-card">
-                        <div class="impact-icon">🌾</div>
-                        <div class="impact-name">Agriculture</div>
-                        <div class="impact-val neg" id="impAgri">−4%</div>
+                        <div class="ic-label">🌾 Agriculture</div>
+                        <div class="ic-val neg" id="imp-agri">−12%</div>
+                        <div class="ic-sub">Yield risk</div>
                     </div>
                     <div class="impact-card">
-                        <div class="impact-icon">💧</div>
-                        <div class="impact-name">Water Res.</div>
-                        <div class="impact-val warn" id="impWater">−8%</div>
+                        <div class="ic-label">💧 Water Res.</div>
+                        <div class="ic-val warn" id="imp-water">+8%</div>
+                        <div class="ic-sub">Reservoir chg</div>
                     </div>
                     <div class="impact-card">
-                        <div class="impact-icon">⚡</div>
-                        <div class="impact-name">Energy</div>
-                        <div class="impact-val warn" id="impEnergy">+12%</div>
+                        <div class="ic-label">⚡ Energy</div>
+                        <div class="ic-val neg" id="imp-energy">−6%</div>
+                        <div class="ic-sub">Grid stress</div>
                     </div>
                     <div class="impact-card">
-                        <div class="impact-icon">🏥</div>
-                        <div class="impact-name">Health</div>
-                        <div class="impact-val neg" id="impHealth">−6%</div>
+                        <div class="ic-label">🏥 Health</div>
+                        <div class="ic-val neg" id="imp-health">−18%</div>
+                        <div class="ic-sub">Exposure idx</div>
                     </div>
                 </div>
             </div>
 
-            <div class="news-feed">
-                <div class="news-title">Simulation Feed</div>
-                <div id="newsFeed">
-                    <div class="news-card info">
-                        <span class="news-source">SYSTEM</span>
-                        DRISHTI-TWIN v2.1 initialised. Select source region and run simulation.
-                    </div>
+            <div class="rp-section">
+                <div class="rp-title">Simulation Feed</div>
+                <div class="news-feed" id="news-feed">
+                    <div class="news-card news-info">🟢 System ready — configure scenario and run simulation to generate
+                        real-time impact analysis.</div>
                 </div>
             </div>
+
+            <div class="export-section">
+                <button class="export-btn" onclick="exportReport()">📥 Export NDMA Action Report (PDF)</button>
+            </div>
+
         </div>
-        <!-- /RIGHT PANEL -->
+    </div>
 
-    </div><!-- /main -->
+    <!-- TOAST -->
+    <div id="toast">✅ <span id="toast-msg">Report generated</span></div>
 
     
 </body>
