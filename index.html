@@ -2,30 +2,34 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DRISHTI-TWIN — AI-Powered Climate Digital Twin of India</title>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DRISHTI-TWIN — AI Climate Digital Twin of India</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
     <style>
         :root {
-            --bg-deep: #050d1a;
-            --bg-panel: #0a1628;
-            --bg-card: #0e1f38;
-            --border: #1a3560;
-            --border-bright: #1e4080;
-            --text-primary: #e8f4ff;
-            --text-secondary: #7ba3d0;
-            --text-muted: #3d6291;
-            --accent-saffron: #FF9933;
-            --accent-gold: #FFD700;
-            --accent-teal: #00D4AA;
-            --accent-red: #FF3B30;
-            --accent-blue: #0066FF;
-            --heatwave: #FF4500;
-            --monsoon: #00BFFF;
-            --cyclone: #9B59B6;
-            --font-display: 'Segoe UI', system-ui, sans-serif;
+            --bg-deep: #f0f4f8;
+            --bg-panel: #ffffff;
+            --bg-card: #f7fafc;
+            --bg-header: #1a2a4a;
+            --border: #dce3ed;
+            --border-strong: #b0bfd0;
+            --text-primary: #1a2a4a;
+            --text-secondary: #4a6080;
+            --text-muted: #7a90a8;
+            --accent-teal: #00897B;
+            --accent-saffron: #E65100;
+            --accent-gold: #F9A825;
+            --accent-blue: #1565C0;
+            --heatwave: #FF3D00;
+            --monsoon: #0288D1;
+            --cyclone: #6A1B9A;
+            --fog: #546E7A;
+            --shadow-sm: 0 1px 4px rgba(26, 42, 74, 0.08);
+            --shadow-md: 0 4px 16px rgba(26, 42, 74, 0.12);
+            --radius: 10px;
+            --radius-sm: 6px;
         }
 
         * {
@@ -35,171 +39,158 @@
         }
 
         body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
             background: var(--bg-deep);
             color: var(--text-primary);
-            font-family: var(--font-display);
             height: 100vh;
             display: flex;
             flex-direction: column;
             overflow: hidden;
         }
 
-        /* ── HEADER ── */
+        /* ─── HEADER ─── */
         header {
-            background: var(--bg-panel);
-            border-bottom: 1px solid var(--border);
-            padding: 0 16px;
-            height: 52px;
+            background: var(--bg-header);
+            padding: 0 20px;
+            height: 54px;
             display: flex;
             align-items: center;
             gap: 16px;
             flex-shrink: 0;
-            z-index: 1000;
+            border-bottom: 2px solid #FF9933;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.25);
         }
 
-        .logo-area {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .logo-icon {
-            width: 36px;
-            height: 36px;
-            background: radial-gradient(circle at 40% 40%, #00D4AA, #0066FF);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        .logo {
             font-size: 18px;
-            flex-shrink: 0;
-        }
-
-        .logo-text h1 {
-            font-size: 15px;
-            font-weight: 700;
+            font-weight: 800;
+            color: #fff;
             letter-spacing: 1px;
-            color: var(--text-primary);
+            white-space: nowrap;
         }
 
-        .logo-text h1 span {
-            color: var(--accent-teal);
+        .logo span {
+            color: #00D4AA;
         }
 
-        .logo-text p {
+        .logo sub {
             font-size: 10px;
-            color: var(--text-secondary);
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
+            font-weight: 400;
+            color: #90CAF9;
+            vertical-align: bottom;
         }
 
-        .header-divider {
-            width: 1px;
-            height: 28px;
-            background: var(--border);
-            flex-shrink: 0;
-        }
-
-        .status-pills {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-        }
-
-        .pill {
+        .live-pill {
+            background: #E53935;
+            color: #fff;
             font-size: 10px;
+            font-weight: 700;
             padding: 3px 8px;
             border-radius: 20px;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-            display: flex;
-            align-items: center;
-            gap: 4px;
+            letter-spacing: 1px;
+            animation: livePulse 1.5s infinite;
         }
 
-        .pill-live {
-            background: rgba(0, 212, 170, 0.15);
-            color: var(--accent-teal);
-            border: 1px solid rgba(0, 212, 170, 0.3);
-        }
-
-        .pill-live::before {
-            content: '';
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background: var(--accent-teal);
-            animation: pulse-dot 1.5s infinite;
-        }
-
-        .pill-isro {
-            background: rgba(255, 153, 51, 0.1);
-            color: var(--accent-saffron);
-            border: 1px solid rgba(255, 153, 51, 0.25);
-        }
-
-        @keyframes pulse-dot {
+        @keyframes livePulse {
 
             0%,
             100% {
-                opacity: 1;
-                transform: scale(1);
+                opacity: 1
             }
 
             50% {
-                opacity: 0.4;
-                transform: scale(0.8);
+                opacity: .6
             }
         }
 
-        .header-time {
-            margin-left: auto;
+        .badge {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            color: #E0E0E0;
+            font-size: 10px;
+            padding: 3px 8px;
+            border-radius: 20px;
+            white-space: nowrap;
+        }
+
+        .badge.gold {
+            border-color: #FFD700;
+            color: #FFD700;
+        }
+
+        .badge.saffron {
+            border-color: #FF9933;
+            color: #FF9933;
+        }
+
+        .header-spacer {
+            flex: 1;
+        }
+
+        .data-tags {
+            display: flex;
+            gap: 8px;
+        }
+
+        .dtag {
+            background: rgba(0, 212, 170, 0.15);
+            border: 1px solid rgba(0, 212, 170, 0.35);
+            color: #80CBC4;
+            font-size: 9px;
+            padding: 2px 7px;
+            border-radius: 20px;
+            letter-spacing: .5px;
+        }
+
+        #clock {
+            color: #90CAF9;
+            font-size: 12px;
+            font-weight: 600;
+            font-variant-numeric: tabular-nums;
+            min-width: 80px;
             text-align: right;
         }
 
-        .header-time .time {
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--text-primary);
-            font-variant-numeric: tabular-nums;
-        }
-
-        .header-time .date {
-            font-size: 10px;
-            color: var(--text-muted);
-        }
-
-        /* ── MAIN LAYOUT ── */
-        .app-body {
+        /* ─── MAIN LAYOUT ─── */
+        .main {
             display: flex;
             flex: 1;
             overflow: hidden;
+            gap: 0;
         }
 
-        /* ── LEFT PANEL ── */
-        .left-panel {
-            width: 270px;
-            flex-shrink: 0;
+        /* ─── PANELS ─── */
+        .panel {
             background: var(--bg-panel);
-            border-right: 1px solid var(--border);
-            display: flex;
-            flex-direction: column;
             overflow-y: auto;
-            overflow-x: hidden;
+            flex-shrink: 0;
+            border-right: 1px solid var(--border);
         }
 
-        .left-panel::-webkit-scrollbar {
+        .panel:last-child {
+            border-right: none;
+            border-left: 1px solid var(--border);
+        }
+
+        .panel-left {
+            width: 272px;
+        }
+
+        .panel-right {
+            width: 284px;
+        }
+
+        .panel::-webkit-scrollbar {
             width: 4px;
         }
 
-        .left-panel::-webkit-scrollbar-track {
+        .panel::-webkit-scrollbar-track {
             background: transparent;
         }
 
-        .left-panel::-webkit-scrollbar-thumb {
-            background: var(--border-bright);
-            border-radius: 2px;
+        .panel::-webkit-scrollbar-thumb {
+            background: var(--border-strong);
+            border-radius: 4px;
         }
 
         .panel-section {
@@ -209,10 +200,10 @@
 
         .section-label {
             font-size: 9px;
-            text-transform: uppercase;
+            font-weight: 700;
             letter-spacing: 1.2px;
             color: var(--text-muted);
-            font-weight: 700;
+            text-transform: uppercase;
             margin-bottom: 10px;
             display: flex;
             align-items: center;
@@ -226,229 +217,175 @@
             background: var(--border);
         }
 
-        /* Step headers */
-        .step-header {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 10px;
-        }
-
         .step-num {
-            width: 20px;
-            height: 20px;
+            width: 18px;
+            height: 18px;
+            background: var(--accent-blue);
+            color: #fff;
             border-radius: 50%;
-            background: rgba(0, 102, 255, 0.2);
-            border: 1px solid rgba(0, 102, 255, 0.5);
-            color: #5599FF;
-            font-size: 10px;
-            font-weight: 700;
-            display: flex;
+            font-size: 9px;
+            font-weight: 800;
+            display: inline-flex;
             align-items: center;
             justify-content: center;
-            flex-shrink: 0;
         }
 
-        .step-title {
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-
-        /* Selects & inputs */
         select,
-        input[type="text"] {
+        input[type=range] {
             width: 100%;
-            background: var(--bg-deep);
-            border: 1px solid var(--border-bright);
+            background: var(--bg-card);
+            border: 1px solid var(--border-strong);
             color: var(--text-primary);
+            border-radius: var(--radius-sm);
             padding: 7px 10px;
-            border-radius: 6px;
             font-size: 12px;
             outline: none;
             cursor: pointer;
-            appearance: none;
-            -webkit-appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%237ba3d0'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 10px center;
         }
 
         select:focus {
             border-color: var(--accent-teal);
         }
 
-        /* Scenario type buttons */
+        input[type=range] {
+            padding: 0;
+            height: 4px;
+            accent-color: var(--accent-teal);
+            cursor: pointer;
+            margin: 4px 0;
+        }
+
+        .slider-row {
+            margin-bottom: 12px;
+        }
+
+        .slider-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 4px;
+        }
+
+        .slider-label {
+            font-size: 11px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .slider-val {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--accent-teal);
+            min-width: 50px;
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* Scenario buttons */
         .scenario-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 6px;
+            gap: 8px;
+            margin-top: 8px;
         }
 
         .scenario-btn {
+            padding: 10px 6px;
+            border-radius: var(--radius-sm);
+            border: 2px solid var(--border);
             background: var(--bg-card);
-            border: 1px solid var(--border);
             color: var(--text-secondary);
-            padding: 8px 6px;
-            border-radius: 7px;
-            font-size: 10px;
-            font-weight: 600;
             cursor: pointer;
+            font-size: 11px;
+            font-weight: 600;
             text-align: center;
-            transition: all 0.2s;
+            transition: all .2s;
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 4px;
         }
 
-        .scenario-btn .btn-icon {
-            font-size: 16px;
+        .scenario-btn .icon {
+            font-size: 20px;
         }
 
         .scenario-btn:hover {
-            border-color: var(--border-bright);
-            color: var(--text-primary);
+            border-color: var(--border-strong);
+            transform: translateY(-1px);
         }
 
         .scenario-btn.active-heat {
             border-color: var(--heatwave);
-            background: rgba(255, 69, 0, 0.12);
-            color: #FF7040;
+            background: #FFF3E0;
+            color: var(--heatwave);
+            box-shadow: 0 0 0 3px rgba(255, 61, 0, 0.12);
         }
 
         .scenario-btn.active-rain {
             border-color: var(--monsoon);
-            background: rgba(0, 191, 255, 0.1);
-            color: #40CFFF;
+            background: #E3F2FD;
+            color: var(--monsoon);
+            box-shadow: 0 0 0 3px rgba(2, 136, 209, 0.12);
         }
 
         .scenario-btn.active-cyclone {
             border-color: var(--cyclone);
-            background: rgba(155, 89, 182, 0.12);
-            color: #C080F0;
+            background: #F3E5F5;
+            color: var(--cyclone);
+            box-shadow: 0 0 0 3px rgba(106, 27, 154, 0.12);
         }
 
         .scenario-btn.active-fog {
-            border-color: #aaa;
-            background: rgba(200, 200, 200, 0.08);
-            color: #ccc;
-        }
-
-        /* Sliders */
-        .slider-group {
-            margin-bottom: 10px;
-        }
-
-        .slider-label {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 5px;
-            font-size: 10px;
-            color: var(--text-secondary);
-        }
-
-        .slider-val {
-            font-weight: 700;
-            font-variant-numeric: tabular-nums;
-        }
-
-        .slider-val.hot {
-            color: #FF7040;
-        }
-
-        .slider-val.rain {
-            color: var(--monsoon);
-        }
-
-        .slider-val.wind {
-            color: var(--cyclone);
-        }
-
-        input[type="range"] {
-            width: 100%;
-            -webkit-appearance: none;
-            height: 4px;
-            border-radius: 2px;
-            background: var(--border);
-            outline: none;
-            cursor: pointer;
-        }
-
-        input[type="range"].heat-range::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 14px;
-            height: 14px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #FF9933, #FF4500);
-            border: 2px solid var(--bg-panel);
-            cursor: pointer;
-        }
-
-        input[type="range"].rain-range::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 14px;
-            height: 14px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #00BFFF, #0066FF);
-            border: 2px solid var(--bg-panel);
-            cursor: pointer;
-        }
-
-        input[type="range"].wind-range::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 14px;
-            height: 14px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #C080F0, #6A0DAD);
-            border: 2px solid var(--bg-panel);
-            cursor: pointer;
+            border-color: var(--fog);
+            background: #ECEFF1;
+            color: var(--fog);
+            box-shadow: 0 0 0 3px rgba(84, 110, 122, 0.12);
         }
 
         /* Run button */
-        .run-btn {
+        #runBtn {
             width: 100%;
-            padding: 10px;
-            background: linear-gradient(135deg, #0044CC, #0066FF);
+            padding: 12px;
+            background: linear-gradient(135deg, var(--accent-blue) 0%, #0D47A1 100%);
+            color: #fff;
             border: none;
-            border-radius: 8px;
-            color: white;
-            font-size: 12px;
+            border-radius: var(--radius);
+            font-size: 13px;
             font-weight: 700;
-            letter-spacing: 0.5px;
             cursor: pointer;
-            text-transform: uppercase;
-            transition: all 0.2s;
+            letter-spacing: .5px;
+            transition: all .2s;
+            box-shadow: 0 4px 12px rgba(21, 101, 192, 0.3);
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 6px;
+            gap: 8px;
         }
 
-        .run-btn:hover {
-            background: linear-gradient(135deg, #0055EE, #2288FF);
+        #runBtn:hover {
             transform: translateY(-1px);
-            box-shadow: 0 4px 16px rgba(0, 102, 255, 0.4);
+            box-shadow: 0 6px 18px rgba(21, 101, 192, 0.4);
         }
 
-        .run-btn:active {
+        #runBtn:active {
             transform: translateY(0);
         }
 
-        .run-btn.simulating {
-            background: linear-gradient(135deg, #006644, #00AA66);
-            animation: pulse-btn 1s infinite;
+        #runBtn.running {
+            background: linear-gradient(135deg, #388E3C, #1B5E20);
+            animation: runPulse 1s infinite;
         }
 
-        @keyframes pulse-btn {
+        @keyframes runPulse {
 
             0%,
             100% {
-                opacity: 1;
+                opacity: 1
             }
 
             50% {
-                opacity: 0.8;
+                opacity: .8
             }
         }
 
@@ -463,593 +400,100 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 6px 8px;
+            padding: 6px 10px;
             background: var(--bg-card);
-            border-radius: 6px;
+            border-radius: var(--radius-sm);
             border: 1px solid var(--border);
             cursor: pointer;
-            transition: border-color 0.2s;
+            transition: background .15s;
         }
 
         .toggle-row:hover {
-            border-color: var(--border-bright);
-        }
-
-        .toggle-row.active {
-            border-color: rgba(0, 212, 170, 0.4);
-            background: rgba(0, 212, 170, 0.05);
+            background: #EBF5FB;
         }
 
         .toggle-label {
             font-size: 11px;
             color: var(--text-secondary);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .toggle-label .dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            flex-shrink: 0;
-        }
-
-        .dot-heat {
-            background: #FF4500;
-        }
-
-        .dot-rain {
-            background: #00BFFF;
-        }
-
-        .dot-eof {
-            background: #FFD700;
-        }
-
-        .dot-wind {
-            background: var(--cyclone);
+            font-weight: 500;
         }
 
         .toggle-switch {
-            width: 28px;
-            height: 15px;
-            background: var(--border);
+            width: 32px;
+            height: 16px;
+            background: #CBD5E0;
             border-radius: 8px;
             position: relative;
-            cursor: pointer;
-            transition: background 0.2s;
+            transition: background .2s;
             flex-shrink: 0;
-        }
-
-        .toggle-switch.on {
-            background: var(--accent-teal);
         }
 
         .toggle-switch::after {
             content: '';
             position: absolute;
+            width: 12px;
+            height: 12px;
+            background: #fff;
+            border-radius: 50%;
             top: 2px;
             left: 2px;
-            width: 11px;
-            height: 11px;
-            border-radius: 50%;
-            background: white;
-            transition: left 0.2s;
+            transition: transform .2s;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
         }
 
-        .toggle-switch.on::after {
-            left: 15px;
+        .toggle-row.on .toggle-switch {
+            background: var(--accent-teal);
         }
 
-        /* ── MAP CENTER ── */
-        .map-area {
-            flex: 1;
+        .toggle-row.on .toggle-switch::after {
+            transform: translateX(16px);
+        }
+
+        /* Data sources */
+        .data-source-list {
             display: flex;
             flex-direction: column;
+            gap: 5px;
+        }
+
+        .ds-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 10px;
+            color: var(--text-secondary);
+        }
+
+        .ds-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .ds-dot.live {
+            background: #E53935;
+            animation: livePulse 1.5s infinite;
+        }
+
+        .ds-dot.ok {
+            background: #43A047;
+        }
+
+        /* ─── MAP AREA ─── */
+        .map-wrap {
+            flex: 1;
             position: relative;
             overflow: hidden;
+            background: #e8edf2;
         }
 
         #map {
-            flex: 1;
-            background: #07111f;
-        }
-
-        /* Map overlays */
-        .map-top-bar {
-            position: absolute;
-            top: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 900;
-            display: flex;
-            gap: 6px;
-            background: rgba(5, 13, 26, 0.85);
-            border: 1px solid var(--border);
-            border-radius: 24px;
-            padding: 5px 10px;
-            backdrop-filter: blur(8px);
-            pointer-events: none;
-        }
-
-        .map-top-bar span {
-            font-size: 10px;
-            color: var(--text-secondary);
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .map-top-bar span b {
-            color: var(--text-primary);
-            font-variant-numeric: tabular-nums;
-        }
-
-        /* Timeline slider */
-        .timeline-bar {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: rgba(5, 13, 26, 0.92);
-            border-top: 1px solid var(--border);
-            padding: 10px 20px 12px;
-            z-index: 900;
-            backdrop-filter: blur(8px);
-        }
-
-        .timeline-labels {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 6px;
-        }
-
-        .timeline-label {
-            font-size: 10px;
-            color: var(--text-muted);
-            font-weight: 600;
-            text-align: center;
-            flex: 1;
-        }
-
-        .timeline-label.active {
-            color: var(--accent-teal);
-        }
-
-        .timeline-track {
-            position: relative;
-            height: 4px;
-            background: var(--border);
-            border-radius: 2px;
-            margin-bottom: 4px;
-        }
-
-        .timeline-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #0066FF, var(--accent-teal));
-            border-radius: 2px;
-            width: 0%;
-            transition: width 0.3s;
-        }
-
-        .timeline-thumb {
-            position: absolute;
-            top: 50%;
-            width: 14px;
-            height: 14px;
-            border-radius: 50%;
-            background: var(--accent-teal);
-            border: 2px solid var(--bg-deep);
-            transform: translate(-50%, -50%);
-            cursor: pointer;
-            transition: left 0.3s;
-            left: 0%;
-            box-shadow: 0 0 8px rgba(0, 212, 170, 0.6);
-        }
-
-        .playback-controls {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-top: 8px;
-        }
-
-        .play-btn {
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            background: var(--accent-teal);
-            border: none;
-            color: var(--bg-deep);
-            font-size: 11px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-            transition: all 0.2s;
-        }
-
-        .play-btn:hover {
-            background: #00F0C0;
-        }
-
-        .day-marker {
-            font-size: 11px;
-            color: var(--text-secondary);
-            font-weight: 600;
-        }
-
-        .day-marker span {
-            color: var(--accent-teal);
-        }
-
-        /* Map legend */
-        .map-legend {
-            position: absolute;
-            bottom: 90px;
-            left: 12px;
-            background: rgba(5, 13, 26, 0.88);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 10px 12px;
-            z-index: 900;
-            backdrop-filter: blur(8px);
-        }
-
-        .legend-title {
-            font-size: 9px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--text-muted);
-            margin-bottom: 8px;
-            font-weight: 700;
-        }
-
-        .legend-gradient {
-            width: 130px;
-            height: 10px;
-            border-radius: 5px;
-            background: linear-gradient(90deg, #00BFFF, #00FF88, #FFFF00, #FF8800, #FF2200);
-            margin-bottom: 4px;
-        }
-
-        .legend-range {
-            display: flex;
-            justify-content: space-between;
-            font-size: 9px;
-            color: var(--text-muted);
-            font-variant-numeric: tabular-nums;
-        }
-
-        /* Simulation notification */
-        .sim-badge {
-            position: absolute;
-            top: 50px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0, 212, 170, 0.15);
-            border: 1px solid var(--accent-teal);
-            color: var(--accent-teal);
-            padding: 6px 16px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 700;
-            z-index: 950;
-            display: none;
-            animation: slideDown 0.3s ease;
-            backdrop-filter: blur(8px);
-        }
-
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateX(-50%) translateY(-10px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateX(-50%) translateY(0);
-            }
-        }
-
-        /* ── RIGHT PANEL ── */
-        .right-panel {
-            width: 280px;
-            flex-shrink: 0;
-            background: var(--bg-panel);
-            border-left: 1px solid var(--border);
-            display: flex;
-            flex-direction: column;
-            overflow-y: auto;
-            overflow-x: hidden;
-        }
-
-        .right-panel::-webkit-scrollbar {
-            width: 4px;
-        }
-
-        .right-panel::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        .right-panel::-webkit-scrollbar-thumb {
-            background: var(--border-bright);
-            border-radius: 2px;
-        }
-
-        /* Ripple effect header */
-        .ripple-header {
-            padding: 12px 14px;
-            border-bottom: 1px solid var(--border);
-            background: linear-gradient(135deg, rgba(0, 102, 255, 0.08), transparent);
-        }
-
-        .ripple-header h2 {
-            font-size: 11px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--text-primary);
-            margin-bottom: 2px;
-        }
-
-        .ripple-header .sub {
-            font-size: 10px;
-            color: var(--accent-saffron);
-            font-weight: 600;
-        }
-
-        /* Mini India map */
-        .mini-maps {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 4px;
-            padding: 10px 14px;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .mini-map-card {
-            background: var(--bg-card);
-            border-radius: 6px;
-            overflow: hidden;
-            border: 1px solid var(--border);
-            position: relative;
-        }
-
-        .mini-map-card canvas {
             width: 100%;
-            height: 70px;
-            display: block;
-        }
-
-        .mini-map-label {
-            position: absolute;
-            top: 4px;
-            right: 5px;
-            font-size: 9px;
-            background: rgba(5, 13, 26, 0.8);
-            padding: 2px 5px;
-            border-radius: 3px;
-            color: var(--text-secondary);
-            font-weight: 700;
-        }
-
-        /* Forecast chart */
-        .chart-section {
-            padding: 10px 14px;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .chart-title {
-            font-size: 9px;
-            text-transform: uppercase;
-            letter-spacing: 0.8px;
-            color: var(--text-muted);
-            font-weight: 700;
-            margin-bottom: 8px;
-        }
-
-        .chart-container {
-            background: var(--bg-card);
-            border-radius: 6px;
-            padding: 10px 8px 6px;
-            border: 1px solid var(--border);
-        }
-
-        .chart-area {
-            position: relative;
-            height: 80px;
-        }
-
-        canvas.line-chart {
-            width: 100%;
-            height: 80px;
-        }
-
-        .chart-legend {
-            display: flex;
-            gap: 10px;
-            margin-top: 6px;
-        }
-
-        .legend-item {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            font-size: 9px;
-            color: var(--text-muted);
-        }
-
-        .legend-line {
-            width: 16px;
-            height: 2px;
-            border-radius: 1px;
-        }
-
-        /* Risk bars */
-        .risk-section {
-            padding: 10px 14px;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .risk-bars {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .risk-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .risk-label {
-            font-size: 10px;
-            color: var(--text-secondary);
-            width: 80px;
-            flex-shrink: 0;
-        }
-
-        .risk-bar-track {
-            flex: 1;
-            height: 6px;
-            background: var(--border);
-            border-radius: 3px;
-            overflow: hidden;
-        }
-
-        .risk-bar-fill {
             height: 100%;
-            border-radius: 3px;
-            transition: width 1s ease;
         }
 
-        .risk-val {
-            font-size: 10px;
-            font-weight: 700;
-            width: 32px;
-            text-align: right;
-            flex-shrink: 0;
-        }
-
-        /* Sector impacts */
-        .impact-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 6px;
-            padding: 10px 14px;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .impact-card {
-            background: var(--bg-card);
-            border-radius: 7px;
-            padding: 8px;
-            border: 1px solid var(--border);
-        }
-
-        .impact-card-head {
-            font-size: 9px;
-            color: var(--text-muted);
-            margin-bottom: 4px;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .impact-val {
-            font-size: 18px;
-            font-weight: 700;
-            line-height: 1;
-            font-variant-numeric: tabular-nums;
-        }
-
-        .impact-val.positive {
-            color: var(--heatwave);
-        }
-
-        .impact-val.negative {
-            color: var(--monsoon);
-        }
-
-        .impact-sub {
-            font-size: 9px;
-            color: var(--text-muted);
-            margin-top: 2px;
-        }
-
-        /* News feed */
-        .news-section {
-            padding: 10px 14px;
-        }
-
-        .news-items {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-
-        .news-item {
-            background: var(--bg-card);
-            border-radius: 6px;
-            padding: 8px 10px;
-            border: 1px solid var(--border);
-            border-left: 3px solid;
-            font-size: 10px;
-            color: var(--text-secondary);
-            line-height: 1.4;
-            position: relative;
-        }
-
-        .news-item .news-src {
-            font-size: 9px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 3px;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .news-item.heat-news {
-            border-left-color: var(--heatwave);
-        }
-
-        .news-item.heat-news .news-src {
-            color: #FF7040;
-        }
-
-        .news-item.rain-news {
-            border-left-color: var(--monsoon);
-        }
-
-        .news-item.rain-news .news-src {
-            color: var(--monsoon);
-        }
-
-        .news-item.info-news {
-            border-left-color: var(--accent-gold);
-        }
-
-        .news-item.info-news .news-src {
-            color: var(--accent-gold);
-        }
-
-        .news-close {
-            position: absolute;
-            top: 6px;
-            right: 8px;
-            cursor: pointer;
-            color: var(--text-muted);
-            font-size: 11px;
-        }
-
-        /* ── WEATHER PHENOMENA CANVAS (on map) ── */
-        #phenomena-canvas {
+        #phenomenaCanvas {
             position: absolute;
             top: 0;
             left: 0;
@@ -1059,55 +503,533 @@
             z-index: 500;
         }
 
-        /* Diff overlay label */
-        .diff-mode-pill {
+        /* Map overlays */
+        .map-infobar {
             position: absolute;
-            top: 10px;
+            top: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(8px);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 7px 18px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            gap: 14px;
+            align-items: center;
+            z-index: 600;
+            box-shadow: var(--shadow-md);
+            white-space: nowrap;
+        }
+
+        .info-sep {
+            color: var(--border-strong);
+        }
+
+        .info-val {
+            color: var(--accent-teal);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .info-val.hot {
+            color: var(--heatwave);
+        }
+
+        .info-val.rain {
+            color: var(--monsoon);
+        }
+
+        .sim-badge {
+            position: absolute;
+            top: 52px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(21, 101, 192, 0.9);
+            color: #fff;
+            padding: 5px 14px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            z-index: 600;
+            display: none;
+        }
+
+        .diff-pill {
+            position: absolute;
+            top: 52px;
             right: 12px;
-            background: rgba(255, 69, 0, 0.15);
-            border: 1px solid rgba(255, 69, 0, 0.4);
-            color: #FF7040;
-            padding: 4px 10px;
+            background: rgba(230, 81, 0, 0.9);
+            color: #fff;
+            padding: 5px 12px;
             border-radius: 20px;
             font-size: 10px;
             font-weight: 700;
-            text-transform: uppercase;
-            z-index: 900;
+            z-index: 600;
             display: none;
-            letter-spacing: 0.5px;
+            letter-spacing: .5px;
         }
 
-        /* Tooltip on hover */
-        .map-tooltip {
+        .map-legend {
             position: absolute;
-            background: rgba(5, 13, 26, 0.92);
+            bottom: 56px;
+            left: 12px;
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(6px);
             border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
             padding: 8px 12px;
-            border-radius: 8px;
-            font-size: 11px;
-            z-index: 990;
-            pointer-events: none;
-            display: none;
-            white-space: nowrap;
-            backdrop-filter: blur(8px);
-        }
-
-        .map-tooltip .tt-title {
-            font-weight: 700;
-            margin-bottom: 4px;
-            color: var(--text-primary);
-        }
-
-        .map-tooltip .tt-row {
+            z-index: 600;
+            font-size: 10px;
             color: var(--text-secondary);
-            display: flex;
-            gap: 8px;
+            box-shadow: var(--shadow-sm);
+            min-width: 160px;
         }
 
-        .map-tooltip .tt-val {
+        .legend-title {
+            font-weight: 700;
+            margin-bottom: 6px;
+            font-size: 10px;
             color: var(--text-primary);
+        }
+
+        .legend-bar {
+            height: 10px;
+            border-radius: 5px;
+            margin: 4px 0;
+        }
+
+        .legend-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 9px;
+            color: var(--text-muted);
+        }
+
+        /* Timeline */
+        .timeline-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.94);
+            backdrop-filter: blur(8px);
+            border-top: 1px solid var(--border);
+            z-index: 600;
+            display: flex;
+            align-items: center;
+            padding: 0 16px;
+            gap: 12px;
+            box-shadow: 0 -2px 8px rgba(26, 42, 74, 0.06);
+        }
+
+        .tl-label {
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            white-space: nowrap;
+        }
+
+        .tl-track {
+            flex: 1;
+            height: 6px;
+            background: var(--border);
+            border-radius: 3px;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .tl-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-teal));
+            border-radius: 3px;
+            width: 0%;
+            transition: width .3s;
+        }
+
+        .tl-thumb {
+            position: absolute;
+            width: 14px;
+            height: 14px;
+            background: var(--accent-blue);
+            border: 2px solid #fff;
+            border-radius: 50%;
+            top: -4px;
+            left: 0%;
+            transform: translateX(-50%);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+            transition: left .3s;
+        }
+
+        .tl-days {
+            display: flex;
+            gap: 2px;
+        }
+
+        .tl-day {
+            font-size: 9px;
+            padding: 3px 7px;
+            border-radius: 12px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all .15s;
+            white-space: nowrap;
+        }
+
+        .tl-day.active {
+            background: var(--accent-blue);
+            color: #fff;
+            border-color: var(--accent-blue);
+        }
+
+        .tl-play {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: var(--accent-blue);
+            border: none;
+            color: #fff;
+            font-size: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(21, 101, 192, 0.3);
+            transition: all .15s;
+            flex-shrink: 0;
+        }
+
+        .tl-play:hover {
+            transform: scale(1.1);
+        }
+
+        /* State tooltip */
+        .state-tooltip {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.96);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 8px 12px;
+            font-size: 11px;
+            z-index: 700;
+            display: none;
+            pointer-events: none;
+            box-shadow: var(--shadow-md);
+            min-width: 140px;
+        }
+
+        .state-tooltip .tt-name {
+            font-weight: 700;
+            font-size: 12px;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .state-tooltip .tt-row {
+            display: flex;
+            justify-content: space-between;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+
+        .state-tooltip .tt-val {
             font-weight: 600;
-            font-variant-numeric: tabular-nums;
+            color: var(--text-primary);
+        }
+
+        /* ─── RIGHT PANEL ─── */
+        .rp-header {
+            padding: 12px 14px;
+            background: linear-gradient(135deg, #1a2a4a 0%, #1565C0 100%);
+            color: #fff;
+        }
+
+        .rp-title {
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: .5px;
+        }
+
+        .rp-subtitle {
+            font-size: 10px;
+            color: #90CAF9;
+            margin-top: 2px;
+        }
+
+        .rp-target-badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.15);
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 10px;
+            color: #fff;
+            margin-top: 4px;
+        }
+
+        .mini-maps {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            padding: 10px 14px;
+        }
+
+        .mini-map-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 6px;
+        }
+
+        .mini-map-label {
+            font-size: 9px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-align: center;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: .8px;
+        }
+
+        canvas.mini-map {
+            width: 100%;
+            display: block;
+            border-radius: 4px;
+        }
+
+        .chart-section {
+            padding: 0 14px 10px;
+        }
+
+        .chart-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 6px;
+        }
+
+        .chart-title {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .chart-legend {
+            display: flex;
+            gap: 10px;
+        }
+
+        .cl-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 9px;
+            color: var(--text-muted);
+        }
+
+        .cl-dot {
+            width: 8px;
+            height: 3px;
+            border-radius: 2px;
+        }
+
+        .risk-bars {
+            padding: 0 14px 10px;
+        }
+
+        .risk-row {
+            margin-bottom: 8px;
+        }
+
+        .risk-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 3px;
+        }
+
+        .risk-name {
+            font-size: 10px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .risk-pct {
+            font-size: 10px;
+            font-weight: 700;
+        }
+
+        .risk-track {
+            height: 6px;
+            background: var(--border);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .risk-fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width .6s ease;
+        }
+
+        .impact-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            padding: 0 14px 10px;
+        }
+
+        .impact-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 10px 8px;
+            text-align: center;
+            transition: border-color .2s;
+        }
+
+        .impact-card:hover {
+            border-color: var(--border-strong);
+        }
+
+        .impact-icon {
+            font-size: 18px;
+            margin-bottom: 3px;
+        }
+
+        .impact-name {
+            font-size: 9px;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+        }
+
+        .impact-val {
+            font-size: 16px;
+            font-weight: 800;
+        }
+
+        .impact-val.neg {
+            color: var(--heatwave);
+        }
+
+        .impact-val.pos {
+            color: #43A047;
+        }
+
+        .impact-val.warn {
+            color: var(--accent-gold);
+        }
+
+        .news-feed {
+            padding: 0 14px 14px;
+        }
+
+        .news-title {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .news-card {
+            padding: 8px 10px;
+            border-radius: var(--radius-sm);
+            border-left: 3px solid var(--border);
+            background: var(--bg-card);
+            margin-bottom: 6px;
+            font-size: 10px;
+            line-height: 1.4;
+            color: var(--text-secondary);
+        }
+
+        .news-card.heat {
+            border-color: var(--heatwave);
+            background: #FFF3E0;
+        }
+
+        .news-card.rain {
+            border-color: var(--monsoon);
+            background: #E3F2FD;
+        }
+
+        .news-card.cyclone {
+            border-color: var(--cyclone);
+            background: #F3E5F5;
+        }
+
+        .news-card.info {
+            border-color: var(--accent-teal);
+            background: #E0F2F1;
+        }
+
+        .news-source {
+            display: block;
+            font-size: 9px;
+            font-weight: 700;
+            color: var(--text-muted);
+            margin-bottom: 2px;
+            letter-spacing: .5px;
+            text-transform: uppercase;
+        }
+
+        /* Heatwave canvas shimmer */
+        @keyframes shimmer {
+            0% {
+                opacity: .7
+            }
+
+            50% {
+                opacity: 1
+            }
+
+            100% {
+                opacity: .7
+            }
+        }
+
+        /* Leaflet overrides for light map */
+        .leaflet-tile-pane {
+            filter: saturate(0.9) brightness(1.02);
+        }
+
+        .leaflet-control-zoom a {
+            background: #fff;
+            color: var(--text-primary);
+            border-color: var(--border);
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-strong);
+            border-radius: 4px;
+        }
+
+        /* Hover state label on map */
+        .leaflet-tooltip.state-label-tip {
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-primary);
+            box-shadow: var(--shadow-sm);
+            padding: 4px 10px;
         }
     </style>
 </head>
@@ -1116,965 +1038,1290 @@
 
     <!-- HEADER -->
     <header>
-        <div class="logo-area">
-            <div class="logo-icon">🌐</div>
-            <div class="logo-text">
-                <h1>DRISHTI-<span>TWIN</span></h1>
-                <p>AI-Powered Climate Digital Twin · Team Vayu</p>
-            </div>
+        <div class="logo">DRISHTI<span>-TWIN</span> <sub>v2.1</sub></div>
+        <div class="live-pill">● LIVE</div>
+        <div class="badge gold">ISRO BAH 2026</div>
+        <div class="badge saffron">PS-05</div>
+        <div class="header-spacer"></div>
+        <div class="data-tags">
+            <div class="dtag">INSAT-3DR</div>
+            <div class="dtag">IMD 0.25°</div>
+            <div class="dtag">ERA5 Reanalysis</div>
+            <div class="dtag">ConvLSTM v3</div>
         </div>
-        <div class="header-divider"></div>
-        <div class="status-pills">
-            <div class="pill pill-live">Live</div>
-            <div class="pill pill-isro">ISRO BAH 2026</div>
-            <div class="pill"
-                style="background:rgba(255,215,0,0.08);color:#FFD700;border:1px solid rgba(255,215,0,0.2);">PS-05</div>
-        </div>
-        <div class="header-divider"></div>
-        <div class="status-pills">
-            <span style="font-size:10px;color:var(--text-muted);">Data:</span>
-            <span style="font-size:10px;color:var(--accent-teal);font-weight:600;">INSAT-3DR</span>
-            <span style="font-size:10px;color:var(--text-muted);">·</span>
-            <span style="font-size:10px;color:var(--accent-teal);font-weight:600;">IMD 0.25°</span>
-        </div>
-        <div class="header-time" style="margin-left:auto;">
-            <div class="time" id="live-time">--:--:-- IST</div>
-            <div class="date" id="live-date">Loading…</div>
-        </div>
+        <div id="clock">--:--:-- IST</div>
     </header>
 
-    <!-- MAIN -->
-    <div class="app-body">
+    <div class="main">
 
         <!-- LEFT PANEL -->
-        <div class="left-panel">
+        <div class="panel panel-left">
 
-            <!-- Step 1: Source Region -->
             <div class="panel-section">
-                <div class="step-header">
-                    <div class="step-num">1</div>
-                    <div class="step-title">Select Source Region</div>
-                </div>
-                <select id="source-region" onchange="updateSourceRegion()">
+                <div class="section-label"><span class="step-num">1</span>Source Region</div>
+                <select id="sourceRegion">
+                    <option value="">— Select State —</option>
                     <option value="AP">Andhra Pradesh</option>
-                    <option value="TN">Tamil Nadu</option>
-                    <option value="KA">Karnataka</option>
-                    <option value="MH">Maharashtra</option>
-                    <option value="RJ">Rajasthan</option>
+                    <option value="AR">Arunachal Pradesh</option>
+                    <option value="AS">Assam</option>
+                    <option value="BR">Bihar</option>
+                    <option value="CG">Chhattisgarh</option>
+                    <option value="GA">Goa</option>
                     <option value="GJ">Gujarat</option>
-                    <option value="OR">Odisha</option>
-                    <option value="WB">West Bengal</option>
-                    <option value="UP">Uttar Pradesh</option>
-                    <option value="MP">Madhya Pradesh</option>
-                    <option value="PB">Punjab</option>
                     <option value="HR">Haryana</option>
+                    <option value="HP">Himachal Pradesh</option>
+                    <option value="JK">Jammu & Kashmir</option>
+                    <option value="JH">Jharkhand</option>
+                    <option value="KA">Karnataka</option>
+                    <option value="KL">Kerala</option>
+                    <option value="LA">Ladakh</option>
+                    <option value="MP">Madhya Pradesh</option>
+                    <option value="MH">Maharashtra</option>
+                    <option value="MN">Manipur</option>
+                    <option value="ML">Meghalaya</option>
+                    <option value="MZ">Mizoram</option>
+                    <option value="NL">Nagaland</option>
+                    <option value="OD">Odisha</option>
+                    <option value="PB">Punjab</option>
+                    <option value="RJ">Rajasthan</option>
+                    <option value="SK">Sikkim</option>
+                    <option value="TN">Tamil Nadu</option>
+                    <option value="TS">Telangana</option>
+                    <option value="TR">Tripura</option>
+                    <option value="UP">Uttar Pradesh</option>
+                    <option value="UK">Uttarakhand</option>
+                    <option value="WB">West Bengal</option>
+                    <option value="AN">Andaman & Nicobar</option>
+                    <option value="CH">Chandigarh</option>
+                    <option value="DN">Dadra & Nagar Haveli</option>
+                    <option value="DD">Daman & Diu</option>
+                    <option value="DL">Delhi (NCT)</option>
+                    <option value="LD">Lakshadweep</option>
+                    <option value="PY">Puducherry</option>
                 </select>
             </div>
 
-            <!-- Step 2: Anomaly Type -->
             <div class="panel-section">
-                <div class="step-header">
-                    <div class="step-num">2</div>
-                    <div class="step-title">Configure Anomaly</div>
-                </div>
-                <div class="scenario-grid" style="margin-bottom:12px;">
+                <div class="section-label"><span class="step-num">2</span>Climate Scenario</div>
+                <div class="scenario-grid">
                     <button class="scenario-btn active-heat" id="btn-heat" onclick="setScenario('heat')">
-                        <span class="btn-icon">🔥</span>Heatwave
+                        <span class="icon">🔥</span>Heatwave
                     </button>
                     <button class="scenario-btn" id="btn-rain" onclick="setScenario('rain')">
-                        <span class="btn-icon">🌧</span>Monsoon
+                        <span class="icon">🌧</span>Monsoon
                     </button>
                     <button class="scenario-btn" id="btn-cyclone" onclick="setScenario('cyclone')">
-                        <span class="btn-icon">🌀</span>Cyclone
+                        <span class="icon">🌀</span>Cyclone
                     </button>
                     <button class="scenario-btn" id="btn-fog" onclick="setScenario('fog')">
-                        <span class="btn-icon">🌫</span>Fog/Cold
+                        <span class="icon">🌫</span>Fog / Cold
                     </button>
-                </div>
-
-                <!-- Temp shock -->
-                <div class="slider-group">
-                    <div class="slider-label">
-                        <span>INJECT TEMPERATURE SHOCK</span>
-                        <span class="slider-val hot" id="temp-val">+1.5°C</span>
-                    </div>
-                    <input type="range" id="temp-slider" class="heat-range" min="-15" max="15" value="15"
-                        oninput="updateTempVal(this.value)"
-                        style="background: linear-gradient(90deg, #0066FF var(--pct,50%), var(--border) var(--pct,50%))">
-                    <div style="display:flex;justify-content:space-between;margin-top:3px;">
-                        <span style="font-size:9px;color:var(--text-muted)">−1.5°C</span>
-                        <span style="font-size:9px;color:var(--text-muted)">+1.5°C</span>
-                    </div>
-                </div>
-
-                <!-- Rainfall -->
-                <div class="slider-group">
-                    <div class="slider-label">
-                        <span>ADJUST RAINFALL INTENSITY</span>
-                        <span class="slider-val rain" id="rain-val">+20%</span>
-                    </div>
-                    <input type="range" id="rain-slider" class="rain-range" min="-20" max="20" value="20"
-                        oninput="updateRainVal(this.value)">
-                    <div style="display:flex;justify-content:space-between;margin-top:3px;">
-                        <span style="font-size:9px;color:var(--text-muted)">−20%</span>
-                        <span style="font-size:9px;color:var(--text-muted)">+20%</span>
-                    </div>
-                </div>
-
-                <!-- Wind speed (for cyclone) -->
-                <div class="slider-group" id="wind-group">
-                    <div class="slider-label">
-                        <span>WIND SPEED PERTURBATION</span>
-                        <span class="slider-val wind" id="wind-val">0 km/h</span>
-                    </div>
-                    <input type="range" id="wind-slider" class="wind-range" min="0" max="200" value="0"
-                        oninput="updateWindVal(this.value)">
-                    <div style="display:flex;justify-content:space-between;margin-top:3px;">
-                        <span style="font-size:9px;color:var(--text-muted)">0</span>
-                        <span style="font-size:9px;color:var(--text-muted)">+200 km/h</span>
-                    </div>
                 </div>
             </div>
 
-            <!-- Step 3: Run -->
             <div class="panel-section">
-                <div class="step-header">
-                    <div class="step-num">3</div>
-                    <div class="step-title">Run Simulation</div>
+                <div class="section-label">Simulation Parameters</div>
+                <div class="slider-row">
+                    <div class="slider-header">
+                        <span class="slider-label">🌡 Temperature Shock</span>
+                        <span class="slider-val" id="tempVal">+0.0°C</span>
+                    </div>
+                    <input type="range" id="tempSlider" min="-15" max="15" value="0"
+                        oninput="tempDelta=this.value/10; document.getElementById('tempVal').textContent=(tempDelta>=0?'+':'')+tempDelta.toFixed(1)+'°C'" />
                 </div>
-                <button class="run-btn" id="run-btn" onclick="runSimulation()">
+                <div class="slider-row">
+                    <div class="slider-header">
+                        <span class="slider-label">💧 Rainfall Intensity</span>
+                        <span class="slider-val" id="rainVal">+0%</span>
+                    </div>
+                    <input type="range" id="rainSlider" min="-20" max="20" value="0"
+                        oninput="rainDelta=parseInt(this.value); document.getElementById('rainVal').textContent=(rainDelta>=0?'+':'')+rainDelta+'%'" />
+                </div>
+                <div class="slider-row">
+                    <div class="slider-header">
+                        <span class="slider-label">💨 Wind Speed</span>
+                        <span class="slider-val" id="windVal">0 km/h</span>
+                    </div>
+                    <input type="range" id="windSlider" min="0" max="200" value="0"
+                        oninput="windDelta=parseInt(this.value); document.getElementById('windVal').textContent=windDelta+' km/h'" />
+                </div>
+            </div>
+
+            <div class="panel-section">
+                <button id="runBtn" onclick="runSimulation()">
                     <span>▶</span> Run Digital Twin Simulation
                 </button>
             </div>
 
-            <!-- Layer Toggles -->
             <div class="panel-section">
                 <div class="section-label">Map Layers</div>
                 <div class="layer-toggles">
-                    <div class="toggle-row active" onclick="toggleLayer(this,'temp')">
-                        <div class="toggle-label"><span class="dot dot-heat"></span>Temperature Field</div>
-                        <div class="toggle-switch on" id="tog-temp"></div>
+                    <div class="toggle-row on" id="tog-temp" onclick="toggleLayer('temp')">
+                        <span class="toggle-label">🌡 Temperature Field</span>
+                        <div class="toggle-switch"></div>
                     </div>
-                    <div class="toggle-row" onclick="toggleLayer(this,'rain')">
-                        <div class="toggle-label"><span class="dot dot-rain"></span>Rainfall Layer</div>
-                        <div class="toggle-switch" id="tog-rain"></div>
+                    <div class="toggle-row on" id="tog-rain" onclick="toggleLayer('rain')">
+                        <span class="toggle-label">💧 Rainfall Layer</span>
+                        <div class="toggle-switch"></div>
                     </div>
-                    <div class="toggle-row" onclick="toggleLayer(this,'eof')">
-                        <div class="toggle-label"><span class="dot dot-eof"></span>EOF Mode Overlay</div>
-                        <div class="toggle-switch" id="tog-eof"></div>
+                    <div class="toggle-row" id="tog-eof" onclick="toggleLayer('eof')">
+                        <span class="toggle-label">〰 EOF Mode Overlay</span>
+                        <div class="toggle-switch"></div>
                     </div>
-                    <div class="toggle-row" onclick="toggleLayer(this,'wind')">
-                        <div class="toggle-label"><span class="dot dot-wind"></span>Wind Vectors</div>
-                        <div class="toggle-switch" id="tog-wind"></div>
+                    <div class="toggle-row on" id="tog-wind" onclick="toggleLayer('wind')">
+                        <span class="toggle-label">🌬 Wind Vectors</span>
+                        <div class="toggle-switch"></div>
                     </div>
                 </div>
             </div>
 
-            <!-- Target region -->
             <div class="panel-section">
                 <div class="section-label">Ripple Target</div>
-                <select id="target-region" onchange="updateTarget()">
+                <select id="targetRegion">
                     <option value="UP">Uttar Pradesh</option>
-                    <option value="MP">Madhya Pradesh</option>
                     <option value="RJ">Rajasthan</option>
                     <option value="MH">Maharashtra</option>
-                    <option value="DL">Delhi NCR</option>
-                    <option value="HR">Haryana</option>
-                    <option value="PB">Punjab</option>
+                    <option value="MP">Madhya Pradesh</option>
+                    <option value="OD">Odisha</option>
+                    <option value="WB">West Bengal</option>
                     <option value="GJ">Gujarat</option>
+                    <option value="TN">Tamil Nadu</option>
+                    <option value="KA">Karnataka</option>
+                    <option value="AP">Andhra Pradesh</option>
+                    <option value="TS">Telangana</option>
+                    <option value="KL">Kerala</option>
+                    <option value="PB">Punjab</option>
+                    <option value="HR">Haryana</option>
+                    <option value="BR">Bihar</option>
+                    <option value="JH">Jharkhand</option>
+                    <option value="CG">Chhattisgarh</option>
+                    <option value="AS">Assam</option>
                 </select>
             </div>
 
-            <!-- Data source -->
             <div class="panel-section">
                 <div class="section-label">Data Sources</div>
-                <div style="display:flex;flex-direction:column;gap:5px;">
-                    <div
-                        style="display:flex;align-items:center;justify-content:space-between;padding:5px 8px;background:var(--bg-card);border-radius:5px;border:1px solid var(--border);">
-                        <span style="font-size:10px;color:var(--text-secondary)">📡 INSAT-3DR</span>
-                        <span style="font-size:9px;color:var(--accent-teal);font-weight:700;">LIVE</span>
+                <div class="data-source-list">
+                    <div class="ds-item">
+                        <div class="ds-dot live"></div>INSAT-3DR LIVE (15-min)
                     </div>
-                    <div
-                        style="display:flex;align-items:center;justify-content:space-between;padding:5px 8px;background:var(--bg-card);border-radius:5px;border:1px solid var(--border);">
-                        <span style="font-size:10px;color:var(--text-secondary)">🌧 IMD Gridded</span>
-                        <span style="font-size:9px;color:var(--accent-teal);font-weight:700;">0.25°</span>
+                    <div class="ds-item">
+                        <div class="ds-dot ok"></div>IMD Gridded 0.25° Daily
                     </div>
-                    <div
-                        style="display:flex;align-items:center;justify-content:space-between;padding:5px 8px;background:var(--bg-card);border-radius:5px;border:1px solid var(--border);">
-                        <span style="font-size:10px;color:var(--text-secondary)">🌡 Temperature</span>
-                        <span style="font-size:9px;color:var(--accent-teal);font-weight:700;">1.0°</span>
+                    <div class="ds-item">
+                        <div class="ds-dot ok"></div>ERA5 Reanalysis 1.0°
+                    </div>
+                    <div class="ds-item">
+                        <div class="ds-dot ok"></div>NCUM Model Output
+                    </div>
+                    <div class="ds-item">
+                        <div class="ds-dot ok"></div>ConvLSTM v3 (Local)
                     </div>
                 </div>
             </div>
 
         </div>
+        <!-- /LEFT PANEL -->
 
-        <!-- MAP CENTER -->
-        <div class="map-area">
+        <!-- CENTER MAP -->
+        <div class="map-wrap">
             <div id="map"></div>
-            <canvas id="phenomena-canvas"></canvas>
+            <canvas id="phenomenaCanvas"></canvas>
 
-            <!-- Top info bar -->
-            <div class="map-top-bar">
-                <span>🌡 Src: <b id="bar-src-temp">34.2°C</b></span>
-                <span style="color:var(--border)">|</span>
-                <span>🎯 Tgt: <b id="bar-tgt">Uttar Pradesh</b></span>
-                <span style="color:var(--border)">|</span>
-                <span>⚡ Δ: <b id="bar-delta" style="color:#FF7040">+1.5°C</b></span>
-                <span style="color:var(--border)">|</span>
-                <span>📊 EOF: <b id="bar-eof">Mode 3</b></span>
+            <div class="map-infobar" id="mapInfoBar">
+                <span>Source: <span class="info-val" id="iSrc">—</span></span>
+                <span class="info-sep">|</span>
+                <span>Target: <span class="info-val" id="iTgt">—</span></span>
+                <span class="info-sep">|</span>
+                <span>Δ Anomaly: <span class="info-val" id="iAnomaly">—</span></span>
+                <span class="info-sep">|</span>
+                <span>EOF: <span class="info-val" id="iEof">Mode 3</span></span>
             </div>
 
-            <!-- Diff mode pill -->
-            <div class="diff-mode-pill" id="diff-pill">⚡ DIFF MAP ACTIVE</div>
+            <div class="sim-badge" id="simBadge">🔄 ConvLSTM Forecasting — Day 1 of 3</div>
+            <div class="diff-pill" id="diffPill">⚡ DIFF MAP ACTIVE</div>
 
-            <!-- Map legend -->
-            <div class="map-legend">
-                <div class="legend-title" id="legend-title">Temperature Anomaly (°C)</div>
-                <div class="legend-gradient" id="legend-grad"></div>
-                <div class="legend-range">
-                    <span id="legend-min">−4°</span>
-                    <span id="legend-mid">0°</span>
-                    <span id="legend-max">+4°</span>
-                </div>
+            <div class="map-legend" id="mapLegend">
+                <div class="legend-title" id="legTitle">Surface Temperature (°C)</div>
+                <div class="legend-bar" id="legBar"
+                    style="background: linear-gradient(90deg, #4FC3F7, #AED581, #FFF176, #FF7043, #B71C1C)"></div>
+                <div class="legend-labels"><span id="legMin">15°C</span><span id="legMid">30°C</span><span
+                        id="legMax">45°C</span></div>
             </div>
 
-            <!-- Tooltip -->
-            <div class="map-tooltip" id="map-tooltip">
-                <div class="tt-title" id="tt-state">—</div>
-                <div class="tt-row"><span>Temp:</span><span class="tt-val" id="tt-temp">—</span></div>
-                <div class="tt-row"><span>Rain:</span><span class="tt-val" id="tt-rain">—</span></div>
-                <div class="tt-row"><span>Anomaly:</span><span class="tt-val" id="tt-anom">—</span></div>
+            <div class="state-tooltip" id="stateTooltip">
+                <div class="tt-name" id="ttName">State</div>
+                <div class="tt-row"><span>Temperature</span><span class="tt-val" id="ttTemp">—</span></div>
+                <div class="tt-row"><span>Rainfall</span><span class="tt-val" id="ttRain">—</span></div>
+                <div class="tt-row"><span>Δ Anomaly</span><span class="tt-val" id="ttAnom">—</span></div>
             </div>
 
-            <!-- Simulation badge -->
-            <div class="sim-badge" id="sim-badge">🔄 ConvLSTM Forecasting — Day <span id="sim-day">1</span> of 3</div>
-
-            <!-- Timeline -->
             <div class="timeline-bar">
-                <div class="timeline-labels">
-                    <div class="timeline-label active" id="tl-0">t+1 days</div>
-                    <div class="timeline-label" id="tl-1">t+2 days</div>
-                    <div class="timeline-label" id="tl-2">t+3 days</div>
-                    <div class="timeline-label" id="tl-3">t+4 days</div>
-                    <div class="timeline-label" id="tl-4">t+5 days</div>
+                <div class="tl-label">FORECAST</div>
+                <div class="tl-days" id="tlDays">
+                    <div class="tl-day active">t+1</div>
+                    <div class="tl-day">t+2</div>
+                    <div class="tl-day">t+3</div>
+                    <div class="tl-day">t+4</div>
+                    <div class="tl-day">t+5</div>
                 </div>
-                <div class="timeline-track">
-                    <div class="timeline-fill" id="tl-fill"></div>
-                    <div class="timeline-thumb" id="tl-thumb"></div>
+                <div class="tl-track">
+                    <div class="tl-fill" id="tlFill"></div>
+                    <div class="tl-thumb" id="tlThumb"></div>
                 </div>
-                <div class="playback-controls">
-                    <button class="play-btn" id="play-btn" onclick="togglePlay()">▶</button>
-                    <span class="day-marker">Forecast Day: <span id="day-label">1</span> / 5</span>
-                    <span style="margin-left:auto;font-size:9px;color:var(--text-muted);">7-day history → 3-day forecast
-                        (ConvLSTM)</span>
-                </div>
+                <div class="tl-label" id="tlDayCounter">Day 0 / 5</div>
+                <button class="tl-play" id="tlPlay" onclick="togglePlay()">▶</button>
             </div>
         </div>
+        <!-- /CENTER -->
 
         <!-- RIGHT PANEL -->
-        <div class="right-panel">
-            <div class="ripple-header">
-                <h2>Ripple Effect Tracking</h2>
-                <div class="sub">Target — <span id="ripple-target-name">Uttar Pradesh</span></div>
+        <div class="panel panel-right">
+            <div class="rp-header">
+                <div class="rp-title">🌏 Ripple Effect Tracker</div>
+                <div class="rp-subtitle">Teleconnection Analysis</div>
+                <div class="rp-target-badge" id="rpTargetBadge">Target: Select a region</div>
             </div>
 
-            <!-- Mini maps -->
             <div class="mini-maps">
                 <div class="mini-map-card">
-                    <canvas id="mini-baseline" width="120" height="70"></canvas>
                     <div class="mini-map-label">Baseline</div>
+                    <canvas class="mini-map" id="miniBaseline" width="110" height="80"></canvas>
                 </div>
                 <div class="mini-map-card">
-                    <canvas id="mini-simulated" width="120" height="70"></canvas>
                     <div class="mini-map-label">Simulated</div>
+                    <canvas class="mini-map" id="miniSimulated" width="110" height="80"></canvas>
                 </div>
             </div>
 
-            <!-- Time series -->
             <div class="chart-section">
-                <div class="chart-title">Time-Series Forecast: <span id="forecast-city"
-                        style="color:var(--accent-saffron)">Lucknow, UP</span></div>
-                <div class="chart-container">
-                    <canvas class="line-chart" id="forecast-chart" width="240" height="80"></canvas>
+                <div class="chart-header">
+                    <div class="chart-title">5-Day Temperature Forecast</div>
                     <div class="chart-legend">
-                        <div class="legend-item">
-                            <div class="legend-line" style="background:#4466FF;"></div>
-                            <span>Baseline</span>
+                        <div class="cl-item">
+                            <div class="cl-dot" style="background:#1565C0"></div>Baseline
                         </div>
-                        <div class="legend-item">
-                            <div class="legend-line" style="background:#FF6633;"></div>
-                            <span>Simulated</span>
+                        <div class="cl-item">
+                            <div class="cl-dot" style="background:#E65100"></div>Simulated
+                        </div>
+                    </div>
+                </div>
+                <canvas id="forecastChart" width="256" height="110" style="width:100%;display:block;"></canvas>
+            </div>
+
+            <div class="panel-section" style="padding-top:8px;">
+                <div class="section-label">Risk Probabilities</div>
+                <div class="risk-bars">
+                    <div class="risk-row">
+                        <div class="risk-header">
+                            <span class="risk-name">🔥 Heatwave</span>
+                            <span class="risk-pct" id="riskHeat" style="color:#FF3D00">18%</span>
+                        </div>
+                        <div class="risk-track">
+                            <div class="risk-fill" id="rfHeat" style="width:18%;background:#FF3D00"></div>
+                        </div>
+                    </div>
+                    <div class="risk-row">
+                        <div class="risk-header">
+                            <span class="risk-name">🌊 Flood Probability</span>
+                            <span class="risk-pct" id="riskFlood" style="color:#0288D1">12%</span>
+                        </div>
+                        <div class="risk-track">
+                            <div class="risk-fill" id="rfFlood" style="width:12%;background:#0288D1"></div>
+                        </div>
+                    </div>
+                    <div class="risk-row">
+                        <div class="risk-header">
+                            <span class="risk-name">🌀 Cyclone Risk</span>
+                            <span class="risk-pct" id="riskCyclone" style="color:#6A1B9A">5%</span>
+                        </div>
+                        <div class="risk-track">
+                            <div class="risk-fill" id="rfCyclone" style="width:5%;background:#6A1B9A"></div>
+                        </div>
+                    </div>
+                    <div class="risk-row">
+                        <div class="risk-header">
+                            <span class="risk-name">❄ Cold Wave</span>
+                            <span class="risk-pct" id="riskCold" style="color:#546E7A">8%</span>
+                        </div>
+                        <div class="risk-track">
+                            <div class="risk-fill" id="rfCold" style="width:8%;background:#546E7A"></div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Risk bars -->
-            <div class="risk-section">
-                <div class="section-label">Localized Weather Risks</div>
-                <div class="risk-bars" id="risk-bars">
-                    <div class="risk-item">
-                        <div class="risk-label">Heatwave</div>
-                        <div class="risk-bar-track">
-                            <div class="risk-bar-fill" id="risk-heat"
-                                style="width:82%;background:linear-gradient(90deg,#FF8800,#FF2200)"></div>
-                        </div>
-                        <div class="risk-val" style="color:#FF5020" id="rval-heat">82%</div>
+            <div class="panel-section" style="padding-top:8px;border-bottom:none;">
+                <div class="section-label">Sector Impact</div>
+                <div class="impact-grid">
+                    <div class="impact-card">
+                        <div class="impact-icon">🌾</div>
+                        <div class="impact-name">Agriculture</div>
+                        <div class="impact-val neg" id="impAgri">−4%</div>
                     </div>
-                    <div class="risk-item">
-                        <div class="risk-label">Flood Prob.</div>
-                        <div class="risk-bar-track">
-                            <div class="risk-bar-fill" id="risk-flood"
-                                style="width:18%;background:linear-gradient(90deg,#0066FF,#00BFFF)"></div>
-                        </div>
-                        <div class="risk-val" style="color:#40AAFF" id="rval-flood">18%</div>
+                    <div class="impact-card">
+                        <div class="impact-icon">💧</div>
+                        <div class="impact-name">Water Res.</div>
+                        <div class="impact-val warn" id="impWater">−8%</div>
                     </div>
-                    <div class="risk-item">
-                        <div class="risk-label">Cyclone</div>
-                        <div class="risk-bar-track">
-                            <div class="risk-bar-fill" id="risk-cyc"
-                                style="width:5%;background:linear-gradient(90deg,#8800CC,#CC66FF)"></div>
-                        </div>
-                        <div class="risk-val" style="color:#CC66FF" id="rval-cyc">5%</div>
+                    <div class="impact-card">
+                        <div class="impact-icon">⚡</div>
+                        <div class="impact-name">Energy</div>
+                        <div class="impact-val warn" id="impEnergy">+12%</div>
                     </div>
-                    <div class="risk-item">
-                        <div class="risk-label">Cold Wave</div>
-                        <div class="risk-bar-track">
-                            <div class="risk-bar-fill" id="risk-cold"
-                                style="width:10%;background:linear-gradient(90deg,#00AAFF,#88EEFF)"></div>
-                        </div>
-                        <div class="risk-val" style="color:#88DDFF" id="rval-cold">10%</div>
+                    <div class="impact-card">
+                        <div class="impact-icon">🏥</div>
+                        <div class="impact-name">Health</div>
+                        <div class="impact-val neg" id="impHealth">−6%</div>
                     </div>
                 </div>
             </div>
 
-            <!-- Sector impacts -->
-            <div class="impact-grid">
-                <div class="impact-card">
-                    <div class="impact-card-head">🌾 Agriculture</div>
-                    <div class="impact-val positive" id="imp-agri">+20%</div>
-                    <div class="impact-sub">Stress index ↑</div>
-                </div>
-                <div class="impact-card">
-                    <div class="impact-card-head">💧 Water Res.</div>
-                    <div class="impact-val negative" id="imp-water">−3.7%</div>
-                    <div class="impact-sub">Reservoir level</div>
-                </div>
-                <div class="impact-card">
-                    <div class="impact-card-head">⚡ Energy</div>
-                    <div class="impact-val positive" id="imp-energy">+12%</div>
-                    <div class="impact-sub">Cooling demand</div>
-                </div>
-                <div class="impact-card">
-                    <div class="impact-card-head">🏥 Health</div>
-                    <div class="impact-val positive" id="imp-health">+8%</div>
-                    <div class="impact-sub">Heat illness risk</div>
-                </div>
-            </div>
-
-            <!-- News feed -->
-            <div class="news-section">
-                <div class="section-label">Simulation Feed</div>
-                <div class="news-items" id="news-feed">
-                    <div class="news-item heat-news">
-                        <div class="news-src">🌡 IMD REPORT</div>
-                        Simulation detects delayed heat anomaly propagating to UP — peak expected Day 3
-                    </div>
-                    <div class="news-item rain-news">
-                        <div class="news-src">🌧 RAINFALL ALERT</div>
-                        Monsoon onset delayed by ~4 days under +1.5°C heatwave scenario
-                    </div>
-                    <div class="news-item info-news">
-                        <div class="news-src">📡 INSAT-3DR</div>
-                        EOF Mode 3 dominant — Western Disturbance pattern active over North India
+            <div class="news-feed">
+                <div class="news-title">Simulation Feed</div>
+                <div id="newsFeed">
+                    <div class="news-card info">
+                        <span class="news-source">SYSTEM</span>
+                        DRISHTI-TWIN v2.1 initialised. Select source region and run simulation.
                     </div>
                 </div>
             </div>
-
         </div>
-    </div>
+        <!-- /RIGHT PANEL -->
+
+    </div><!-- /main -->
 
     <script>
-        // ─── TIME ───
-        function updateClock() {
-            const now = new Date();
-            const ist = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
-            const h = String(ist.getHours()).padStart(2, '0');
-            const m = String(ist.getMinutes()).padStart(2, '0');
-            const s = String(ist.getSeconds()).padStart(2, '0');
-            document.getElementById('live-time').textContent = `${h}:${m}:${s} IST`;
-            document.getElementById('live-date').textContent = ist.toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+        // ─── STATE ─────────────────────────────────────────────────────────────
+        let tempDelta = 0, rainDelta = 0, windDelta = 0;
+        let sourceRegion = '', targetRegion = 'UP';
+        let currentScenario = 'heat';
+        let timelineDay = 0;
+        let simRunning = false, tlPlaying = false, tlInterval = null;
+        let layerState = { temp: true, rain: true, eof: false, wind: true };
+        let animFrame = null;
+        let heatShimmerOffset = 0;
+        let heatwaveParticles = [];
+        let rainParticles = [];
+        let cycloneParticles = [];
+        let fogParticles = [];
+        let simHasRun = false;
+
+        // ─── ALL INDIA STATE DATA ───────────────────────────────────────────────
+        const stateData = {
+            AP: { center: [15.9, 80.0], label: 'Andhra Pradesh', baseTemp: 31, baseRain: 85 },
+            AR: { center: [27.1, 93.6], label: 'Arunachal Pradesh', baseTemp: 18, baseRain: 280 },
+            AS: { center: [26.2, 92.9], label: 'Assam', baseTemp: 26, baseRain: 220 },
+            BR: { center: [25.6, 85.1], label: 'Bihar', baseTemp: 28, baseRain: 110 },
+            CG: { center: [21.3, 81.6], label: 'Chhattisgarh', baseTemp: 29, baseRain: 130 },
+            GA: { center: [15.3, 74.0], label: 'Goa', baseTemp: 28, baseRain: 250 },
+            GJ: { center: [22.3, 71.2], label: 'Gujarat', baseTemp: 33, baseRain: 75 },
+            HR: { center: [29.1, 76.1], label: 'Haryana', baseTemp: 29, baseRain: 60 },
+            HP: { center: [31.9, 77.1], label: 'Himachal Pradesh', baseTemp: 16, baseRain: 120 },
+            JK: { center: [34.0, 74.8], label: 'Jammu & Kashmir', baseTemp: 12, baseRain: 90 },
+            JH: { center: [23.6, 85.3], label: 'Jharkhand', baseTemp: 27, baseRain: 130 },
+            KA: { center: [15.3, 75.7], label: 'Karnataka', baseTemp: 27, baseRain: 140 },
+            KL: { center: [10.2, 76.3], label: 'Kerala', baseTemp: 27, baseRain: 310 },
+            LA: { center: [34.2, 77.6], label: 'Ladakh', baseTemp: 4, baseRain: 15 },
+            MP: { center: [23.5, 77.7], label: 'Madhya Pradesh', baseTemp: 30, baseRain: 100 },
+            MH: { center: [19.7, 75.7], label: 'Maharashtra', baseTemp: 30, baseRain: 120 },
+            MN: { center: [24.8, 93.9], label: 'Manipur', baseTemp: 21, baseRain: 190 },
+            ML: { center: [25.5, 91.4], label: 'Meghalaya', baseTemp: 20, baseRain: 400 },
+            MZ: { center: [23.2, 92.9], label: 'Mizoram', baseTemp: 21, baseRain: 200 },
+            NL: { center: [26.2, 94.6], label: 'Nagaland', baseTemp: 20, baseRain: 185 },
+            OD: { center: [20.9, 84.2], label: 'Odisha', baseTemp: 29, baseRain: 145 },
+            PB: { center: [31.1, 75.3], label: 'Punjab', baseTemp: 27, baseRain: 65 },
+            RJ: { center: [27.0, 74.2], label: 'Rajasthan', baseTemp: 34, baseRain: 35 },
+            SK: { center: [27.5, 88.5], label: 'Sikkim', baseTemp: 15, baseRain: 210 },
+            TN: { center: [11.1, 78.7], label: 'Tamil Nadu', baseTemp: 30, baseRain: 100 },
+            TS: { center: [17.4, 79.0], label: 'Telangana', baseTemp: 32, baseRain: 90 },
+            TR: { center: [23.8, 91.3], label: 'Tripura', baseTemp: 25, baseRain: 220 },
+            UP: { center: [26.8, 80.9], label: 'Uttar Pradesh', baseTemp: 28, baseRain: 90 },
+            UK: { center: [30.1, 79.3], label: 'Uttarakhand', baseTemp: 18, baseRain: 140 },
+            WB: { center: [23.0, 87.7], label: 'West Bengal', baseTemp: 27, baseRain: 175 },
+            AN: { center: [11.7, 92.7], label: 'Andaman & Nicobar', baseTemp: 28, baseRain: 300 },
+            CH: { center: [30.7, 76.8], label: 'Chandigarh', baseTemp: 27, baseRain: 65 },
+            DN: { center: [20.2, 73.0], label: 'Dadra & Nagar Haveli', baseTemp: 29, baseRain: 140 },
+            DD: { center: [20.4, 72.8], label: 'Daman & Diu', baseTemp: 30, baseRain: 80 },
+            DL: { center: [28.6, 77.2], label: 'Delhi (NCT)', baseTemp: 30, baseRain: 65 },
+            LD: { center: [10.6, 72.6], label: 'Lakshadweep', baseTemp: 28, baseRain: 160 },
+            PY: { center: [11.9, 79.8], label: 'Puducherry', baseTemp: 30, baseRain: 115 },
+        };
+
+        // Adjacency for ripple propagation
+        const adjacency = {
+            AP: ['TS', 'OD', 'CG', 'KA', 'TN'], RJ: ['HR', 'PB', 'UP', 'MP', 'GJ'],
+            MP: ['RJ', 'UP', 'CG', 'MH', 'GJ'], UP: ['UK', 'HP', 'HR', 'RJ', 'MP', 'BR', 'JH', 'WB'],
+            MH: ['MP', 'CG', 'TS', 'KA', 'GJ', 'AP'], GJ: ['RJ', 'MP', 'MH'],
+            KA: ['MH', 'AP', 'TS', 'TN', 'KL'], TN: ['AP', 'KA', 'KL', 'PY'],
+            WB: ['OD', 'JH', 'BR', 'AS', 'SK'], OD: ['AP', 'TS', 'CG', 'JH', 'WB'],
+            AS: ['WB', 'SK', 'AR', 'NL', 'MN', 'MZ', 'TR', 'ML'],
+            HR: ['PB', 'UK', 'UP', 'RJ', 'DL'], PB: ['JK', 'HP', 'HR', 'CH'],
+            BR: ['UP', 'JH', 'WB'], JH: ['OD', 'WB', 'BR', 'UP', 'MP', 'CG'],
+            CG: ['MP', 'OD', 'JH', 'MH', 'TS', 'AP'], KL: ['TN', 'KA'],
+            HP: ['JK', 'LA', 'UK', 'PB'], UK: ['HP', 'UP', 'HR'], JK: ['HP', 'LA'],
+            TS: ['AP', 'MH', 'CG', 'KA', 'MP'], TR: ['AS', 'MZ'], MN: ['AS', 'NL', 'MZ'],
+            ML: ['AS'], NL: ['AS', 'AR', 'MN'], MZ: ['AS', 'TR', 'MN'],
+            AR: ['AS', 'NL'], SK: ['WB', 'AS'], DL: ['HR', 'UP'], CH: ['PB', 'HR'],
+            GA: ['MH', 'KA'], PY: ['TN', 'KA'], DD: ['GJ', 'DN'], DN: ['GJ', 'MH'],
+            AN: [], LD: [], LA: ['JK', 'HP'],
+        };
+
+        // Neighbor rings for spread
+        function getNeighbors(code, depth = 1) {
+            let ring = new Set([code]);
+            for (let d = 0; d < depth; d++) {
+                let next = new Set(ring);
+                ring.forEach(c => { (adjacency[c] || []).forEach(n => next.add(n)); });
+                ring = next;
+            }
+            return [...ring];
         }
-        setInterval(updateClock, 1000);
-        updateClock();
 
-        // ─── LEAFLET MAP ───
-        const map = L.map('map', {
-            center: [22.5, 82],
-            zoom: 5,
-            zoomControl: false,
-            attributionControl: false
-        });
-
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        // ─── MAP INIT ─────────────────────────────────────────────────────────
+        const map = L.map('map', { zoomControl: true, attributionControl: false }).setView([22, 82], 5);
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
             maxZoom: 10, minZoom: 4
         }).addTo(map);
 
-        L.control.zoom({ position: 'bottomright' }).addTo(map);
+        // State circles on map
+        const stateMarkers = {};
+        const stateColors = {};
 
-        // India state boundaries GeoJSON (simplified key states)
-        const stateData = {
-            "AP": { center: [15.9, 79.7], label: "Andhra Pradesh", baseTemp: 34, baseRain: 4.2 },
-            "TN": { center: [11.1, 78.6], label: "Tamil Nadu", baseTemp: 33, baseRain: 6.8 },
-            "KA": { center: [15.3, 75.7], label: "Karnataka", baseTemp: 30, baseRain: 5.5 },
-            "MH": { center: [19.7, 75.7], label: "Maharashtra", baseTemp: 32, baseRain: 3.9 },
-            "RJ": { center: [27.0, 74.2], label: "Rajasthan", baseTemp: 38, baseRain: 0.9 },
-            "GJ": { center: [22.2, 71.5], label: "Gujarat", baseTemp: 36, baseRain: 2.1 },
-            "OR": { center: [20.9, 85.0], label: "Odisha", baseTemp: 33, baseRain: 7.2 },
-            "WB": { center: [22.9, 87.8], label: "West Bengal", baseTemp: 32, baseRain: 8.1 },
-            "UP": { center: [26.8, 80.9], label: "Uttar Pradesh", baseTemp: 35, baseRain: 3.1 },
-            "MP": { center: [23.4, 77.6], label: "Madhya Pradesh", baseTemp: 34, baseRain: 4.0 },
-            "PB": { center: [31.1, 75.3], label: "Punjab", baseTemp: 33, baseRain: 2.4 },
-            "HR": { center: [29.0, 76.1], label: "Haryana", baseTemp: 34, baseRain: 2.0 },
-            "DL": { center: [28.6, 77.2], label: "Delhi NCR", baseTemp: 36, baseRain: 1.8 }
-        };
+        function tempToColor(t, alpha = 0.55) {
+            const stops = [
+                [15, '#4FC3F7'], [22, '#81C784'], [27, '#FFF176'], [32, '#FFB74D'], [37, '#FF7043'], [43, '#B71C1C']
+            ];
+            let lo = stops[0], hi = stops[stops.length - 1];
+            for (let i = 0; i < stops.length - 1; i++) {
+                if (t >= stops[i][0] && t <= stops[i + 1][0]) { lo = stops[i]; hi = stops[i + 1]; break; }
+            }
+            const frac = (t - lo[0]) / (hi[0] - lo[0]);
+            const c1 = hexToRgb(lo[1]), c2 = hexToRgb(hi[1]);
+            const r = Math.round(c1.r + (c2.r - c1.r) * frac);
+            const g = Math.round(c1.g + (c2.g - c1.g) * frac);
+            const b = Math.round(c1.b + (c2.b - c1.b) * frac);
+            return `rgba(${r},${g},${b},${alpha})`;
+        }
+        function hexToRgb(h) { const r = parseInt(h.slice(1, 3), 16), g = parseInt(h.slice(3, 5), 16), b = parseInt(h.slice(5, 7), 16); return { r, g, b }; }
 
-        // Draw heatmap circles per state
-        let heatCircles = {};
-        let arrowLines = [];
-        let currentScenario = 'heat';
-        let isSimulating = false;
-        let tempDelta = 1.5;
-        let rainDelta = 20;
-        let windDelta = 0;
-        let sourceRegion = 'AP';
-        let targetRegion = 'UP';
-
-        function getHeatColor(temp, delta) {
-            const t = temp + delta;
-            if (t < 25) return { color: '#00BFFF', opacity: 0.35 };
-            if (t < 30) return { color: '#00FF88', opacity: 0.35 };
-            if (t < 33) return { color: '#FFFF00', opacity: 0.40 };
-            if (t < 36) return { color: '#FF8800', opacity: 0.45 };
-            if (t < 39) return { color: '#FF4500', opacity: 0.55 };
-            return { color: '#FF0000', opacity: 0.65 };
+        function getStateTemp(code) {
+            const s = stateData[code];
+            if (!s) return 28;
+            let t = s.baseTemp;
+            if (sourceRegion === code) t += parseFloat(tempDelta) || 0;
+            else if ((adjacency[sourceRegion] || []).includes(code)) t += (parseFloat(tempDelta) || 0) * 0.55;
+            else if (getNeighbors(sourceRegion, 2).includes(code)) t += (parseFloat(tempDelta) || 0) * 0.25;
+            return t;
         }
 
-        function drawHeatmap() {
-            Object.values(heatCircles).forEach(c => map.removeLayer(c));
-            heatCircles = {};
-
-            const tDelta = currentScenario === 'heat' ? tempDelta : currentScenario === 'fog' ? -tempDelta : 0;
-            const isSourceState = (k) => k === sourceRegion;
-            const isTargetState = (k) => k === targetRegion;
-
-            Object.entries(stateData).forEach(([key, st]) => {
-                let localDelta = tDelta * 0.3;
-                if (isSourceState(key)) localDelta = tDelta;
-                else if (isTargetState(key)) localDelta = tDelta * 0.65;
-
-                const { color, opacity } = getHeatColor(st.baseTemp, localDelta);
-                const r = isSourceState(key) ? 180000 : isTargetState(key) ? 160000 : 130000;
-
-                const circle = L.circle(st.center, {
-                    radius: r,
-                    color: 'transparent',
-                    fillColor: color,
-                    fillOpacity: opacity,
-                    interactive: true
+        function initMarkers() {
+            Object.entries(stateData).forEach(([code, s]) => {
+                const t = getStateTemp(code);
+                const col = tempToColor(t, 0.6);
+                stateColors[code] = col;
+                const circle = L.circle(s.center, {
+                    radius: 60000,
+                    fillColor: col,
+                    fillOpacity: 0.55,
+                    color: 'rgba(100,130,180,0.4)',
+                    weight: 1,
+                    className: 'state-circle'
                 }).addTo(map);
+                circle.on('mouseover', (e) => showTooltip(e, code));
+                circle.on('mouseout', () => { document.getElementById('stateTooltip').style.display = 'none'; });
+                stateMarkers[code] = circle;
+            });
+        }
+        initMarkers();
 
-                circle.on('mousemove', (e) => {
-                    const tt = document.getElementById('map-tooltip');
-                    tt.style.display = 'block';
-                    tt.style.left = (e.originalEvent.offsetX + 15) + 'px';
-                    tt.style.top = (e.originalEvent.offsetY - 10) + 'px';
-                    document.getElementById('tt-state').textContent = st.label;
-                    document.getElementById('tt-temp').textContent = (st.baseTemp + localDelta).toFixed(1) + '°C';
-                    document.getElementById('tt-rain').textContent = (st.baseRain * (1 + rainDelta / 100)).toFixed(1) + ' mm/hr';
-                    document.getElementById('tt-anom').textContent = (localDelta >= 0 ? '+' : '') + localDelta.toFixed(1) + '°C';
-                });
-                circle.on('mouseout', () => {
-                    document.getElementById('map-tooltip').style.display = 'none';
-                });
+        // Arrow layers
+        const arrowLayers = [];
+        function clearArrows() { arrowLayers.forEach(l => map.removeLayer(l)); arrowLayers.length = 0; }
 
-                heatCircles[key] = circle;
+        function drawArrows(src, tgt) {
+            clearArrows();
+            if (!src || !tgt || !stateData[src] || !stateData[tgt]) return;
+            const a = stateData[src].center, b = stateData[tgt].center;
+            const mx = (a[0] + b[0]) / 2 + (b[1] - a[1]) * 0.18, my = (a[1] + b[1]) / 2 - (b[0] - a[0]) * 0.18;
+            const line = L.polyline([[a[0], a[1]], [mx, my], [b[0], b[1]]], {
+                color: '#E65100', weight: 2.5, opacity: .8, dashArray: '8 5', lineCap: 'round'
+            }).addTo(map);
+            arrowLayers.push(line);
+            // Secondary arrows to neighbors of target
+            (adjacency[tgt] || []).slice(0, 3).forEach(n => {
+                if (n === src) return;
+                const c = stateData[n]?.center;
+                if (!c) return;
+                const sl = L.polyline([b, c], {
+                    color: '#1565C0', weight: 1.5, opacity: .5, dashArray: '5 6'
+                }).addTo(map);
+                arrowLayers.push(sl);
             });
         }
 
-        function drawArrows() {
-            arrowLines.forEach(l => map.removeLayer(l));
-            arrowLines = [];
+        // Tooltip
+        function showTooltip(e, code) {
+            const s = stateData[code];
+            if (!s) return;
+            const t = getStateTemp(code);
+            const r = s.baseRain + (sourceRegion === code ? rainDelta * 2 : 0);
+            const delta = t - s.baseTemp;
+            document.getElementById('ttName').textContent = s.label;
+            document.getElementById('ttTemp').textContent = t.toFixed(1) + '°C';
+            document.getElementById('ttRain').textContent = r + ' mm/day';
+            document.getElementById('ttAnom').textContent = (delta >= 0 ? '+' : '') + delta.toFixed(1) + '°C';
+            const tt = document.getElementById('stateTooltip');
+            const cont = document.querySelector('.map-wrap');
+            const rect = cont.getBoundingClientRect();
+            tt.style.display = 'block';
+            tt.style.left = (e.originalEvent.clientX - rect.left + 12) + 'px';
+            tt.style.top = (e.originalEvent.clientY - rect.top - 60) + 'px';
+        }
 
-            const src = stateData[sourceRegion];
-            const tgt = stateData[targetRegion];
-            if (!src || !tgt) return;
+        // ─── CANVAS PHENOMENA ──────────────────────────────────────────────────
+        const canvas = document.getElementById('phenomenaCanvas');
+        const ctx = canvas.getContext('2d');
 
-            // Main arrow from source to target
-            const latlngs = [src.center, [
-                (src.center[0] + tgt.center[0]) / 2 + 1.5,
-                (src.center[1] + tgt.center[1]) / 2 + 1
-            ], tgt.center];
+        function resizeCanvas() {
+            const wrap = document.querySelector('.map-wrap');
+            canvas.width = wrap.offsetWidth;
+            canvas.height = wrap.offsetHeight;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', () => { resizeCanvas(); });
 
-            const arrowColor = currentScenario === 'rain' ? '#00BFFF' : currentScenario === 'cyclone' ? '#CC66FF' : '#FF6633';
-            const mainArrow = L.polyline(latlngs, {
-                color: arrowColor,
-                weight: 3,
-                opacity: 0.8,
-                dashArray: '8,4'
-            }).addTo(map);
-            arrowLines.push(mainArrow);
+        // roundRect polyfill for older browsers
+        if (!CanvasRenderingContext2D.prototype.roundRect) {
+            CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
+                this.beginPath();
+                this.moveTo(x + r, y);
+                this.lineTo(x + w - r, y); this.arcTo(x + w, y, x + w, y + r, r);
+                this.lineTo(x + w, y + h - r); this.arcTo(x + w, y + h, x + w - r, y + h, r);
+                this.lineTo(x + r, y + h); this.arcTo(x, y + h, x, y + h - r, r);
+                this.lineTo(x, y + r); this.arcTo(x, y, x + r, y, r);
+                this.closePath();
+            };
+        }
 
-            // Secondary ripple arrows
-            const midStates = Object.keys(stateData).filter(k => k !== sourceRegion && k !== targetRegion);
-            midStates.slice(0, 3).forEach(k => {
-                const ms = stateData[k];
-                const dist = Math.hypot(ms.center[0] - src.center[0], ms.center[1] - src.center[1]);
-                if (dist < 12) {
-                    const sec = L.polyline([src.center, ms.center], {
-                        color: arrowColor, weight: 1.5, opacity: 0.4, dashArray: '4,6'
-                    }).addTo(map);
-                    arrowLines.push(sec);
+        // Convert lat/lng to canvas pixel
+        function latLngToXY(lat, lng) {
+            const pt = map.latLngToContainerPoint([lat, lng]);
+            return { x: pt.x, y: pt.y };
+        }
+
+        // ── HEATWAVE: subtle heat-shimmer tint only — map stays fully readable ──
+        function initHeatwaveParticles() {
+            heatwaveParticles = [];
+            const src = sourceRegion || 'RJ';
+            const affected = getNeighbors(src, 1); // only source + direct neighbors
+            affected.forEach(code => {
+                const s = stateData[code];
+                if (!s) return;
+                const intensity = code === src ? 1.0 : 0.45;
+                for (let i = 0; i < 6; i++) {
+                    heatwaveParticles.push({
+                        code,
+                        ox: (Math.random() - 0.5) * 1.8,
+                        oy: (Math.random() - 0.5) * 1.8,
+                        intensity,
+                        phase: Math.random() * Math.PI * 2,
+                        born: Date.now() - Math.random() * 3000,
+                        lifespan: 2500 + Math.random() * 2000,
+                    });
                 }
             });
         }
 
-        drawHeatmap();
-        drawArrows();
+        function drawHeatwave(t) {
+            if (!layerState.temp) return;
+            const src = sourceRegion || 'RJ';
+            const affected = getNeighbors(src, 1);
 
-        // ─── PHENOMENA CANVAS (rain / cyclone / fog) ───
-        const canvas = document.getElementById('phenomena-canvas');
-        const ctx = canvas.getContext('2d');
-        let phenomenaAnimId = null;
-        let rainDrops = [];
-        let cycloneParticles = [];
-        let fogParticles = [];
+            // 1. Very light warm tint over affected states — low alpha so map shows through
+            affected.forEach(code => {
+                const sd = stateData[code];
+                if (!sd) return;
+                const isSrc = code === src;
+                const intensity = isSrc ? 1.0 : 0.4;
+                const pt = latLngToXY(sd.center[0], sd.center[1]);
+                const pulse = Math.sin(t * 0.0018 + sd.center[1] * 0.5) * 0.04;
+                const baseAlpha = isSrc ? 0.18 + pulse : 0.09 + pulse * 0.5;
 
-        function resizeCanvas() {
-            canvas.width = canvas.offsetWidth;
-            canvas.height = canvas.offsetHeight;
-        }
-        resizeCanvas();
-        window.addEventListener('resize', resizeCanvas);
-
-        function initRain() {
-            rainDrops = [];
-            for (let i = 0; i < 180; i++) {
-                rainDrops.push({
-                    x: Math.random() * canvas.width,
-                    y: Math.random() * canvas.height,
-                    l: Math.random() * 18 + 8,
-                    speed: Math.random() * 4 + 3,
-                    opacity: Math.random() * 0.5 + 0.2
-                });
-            }
-        }
-
-        function drawRain() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            rainDrops.forEach(d => {
+                // Soft elliptical tint — stays transparent enough to read map
+                const rx = isSrc ? 130 : 95;
+                const ry = isSrc ? 110 : 80;
+                ctx.save();
+                ctx.scale(1, ry / rx);
+                const grad = ctx.createRadialGradient(pt.x, pt.y * rx / ry, 0, pt.x, pt.y * rx / ry, rx);
+                if (isSrc) {
+                    grad.addColorStop(0, `rgba(255,80,0,${baseAlpha})`);
+                    grad.addColorStop(0.45, `rgba(255,140,0,${baseAlpha * 0.55})`);
+                    grad.addColorStop(0.75, `rgba(255,200,80,${baseAlpha * 0.2})`);
+                    grad.addColorStop(1, `rgba(255,200,80,0)`);
+                } else {
+                    grad.addColorStop(0, `rgba(255,150,50,${baseAlpha})`);
+                    grad.addColorStop(0.5, `rgba(255,190,80,${baseAlpha * 0.4})`);
+                    grad.addColorStop(1, `rgba(255,190,80,0)`);
+                }
                 ctx.beginPath();
-                ctx.moveTo(d.x, d.y);
-                ctx.lineTo(d.x - 1, d.y + d.l);
-                ctx.strokeStyle = `rgba(0, 191, 255, ${d.opacity})`;
-                ctx.lineWidth = 1.5;
-                ctx.stroke();
-                d.y += d.speed;
-                d.x -= 0.5;
-                if (d.y > canvas.height) { d.y = -d.l; d.x = Math.random() * canvas.width; }
-                if (d.x < 0) d.x = canvas.width;
-            });
-        }
-
-        function initCyclone() {
-            cycloneParticles = [];
-            const cx = canvas.width * 0.55;
-            const cy = canvas.height * 0.3;
-            for (let i = 0; i < 200; i++) {
-                const angle = Math.random() * Math.PI * 2;
-                const r = Math.random() * 120 + 20;
-                cycloneParticles.push({
-                    cx, cy,
-                    angle,
-                    r,
-                    speed: (0.02 + Math.random() * 0.03) * (r < 60 ? 2 : 1),
-                    opacity: Math.random() * 0.6 + 0.2,
-                    size: Math.random() * 2 + 0.5
-                });
-            }
-        }
-
-        function drawCyclone(t) {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            cycloneParticles.forEach(p => {
-                const x = p.cx + Math.cos(p.angle) * p.r;
-                const y = p.cy + Math.sin(p.angle) * p.r * 0.6;
-                ctx.beginPath();
-                ctx.arc(x, y, p.size, 0, Math.PI * 2);
-                const fade = 1 - p.r / 160;
-                ctx.fillStyle = `rgba(180, 100, 255, ${p.opacity * fade})`;
-                ctx.fill();
-                p.angle += p.speed;
-                p.r *= 0.9995;
-                if (p.r < 10) p.r = Math.random() * 120 + 40;
-            });
-            // Eye
-            const grad = ctx.createRadialGradient(cycloneParticles[0].cx, cycloneParticles[0].cy, 0, cycloneParticles[0].cx, cycloneParticles[0].cy, 25);
-            grad.addColorStop(0, 'rgba(200,150,255,0.3)');
-            grad.addColorStop(1, 'transparent');
-            ctx.beginPath();
-            ctx.arc(cycloneParticles[0].cx, cycloneParticles[0].cy, 25, 0, Math.PI * 2);
-            ctx.fillStyle = grad;
-            ctx.fill();
-        }
-
-        function initFog() {
-            fogParticles = [];
-            for (let i = 0; i < 60; i++) {
-                fogParticles.push({
-                    x: Math.random() * canvas.width,
-                    y: Math.random() * canvas.height,
-                    r: Math.random() * 80 + 30,
-                    vx: (Math.random() - 0.5) * 0.3,
-                    vy: (Math.random() - 0.5) * 0.1,
-                    opacity: Math.random() * 0.12 + 0.04
-                });
-            }
-        }
-
-        function drawFog() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            fogParticles.forEach(p => {
-                const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r);
-                grad.addColorStop(0, `rgba(200,220,255,${p.opacity})`);
-                grad.addColorStop(1, 'transparent');
-                ctx.beginPath();
-                ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                ctx.arc(pt.x, pt.y * rx / ry, rx, 0, Math.PI * 2);
                 ctx.fillStyle = grad;
                 ctx.fill();
-                p.x += p.vx; p.y += p.vy;
-                if (p.x < -p.r) p.x = canvas.width + p.r;
-                if (p.x > canvas.width + p.r) p.x = -p.r;
+                ctx.restore();
+            });
+
+            // 2. Heat shimmer — thin wavy horizontal lines only over source, very subtle
+            const srcData = stateData[src];
+            if (srcData) {
+                const pt = latLngToXY(srcData.center[0], srcData.center[1]);
+                ctx.save();
+                ctx.globalAlpha = 0.10;
+                ctx.strokeStyle = '#FF7700';
+                ctx.lineWidth = 0.8;
+                for (let i = 0; i < 10; i++) {
+                    const yy = pt.y - 70 + i * 14;
+                    ctx.beginPath();
+                    ctx.moveTo(pt.x - 80, yy);
+                    for (let x = 0; x <= 160; x += 6) {
+                        const wave = Math.sin((x * 0.12) + t * 0.04 + i * 1.3) * 4;
+                        ctx.lineTo(pt.x - 80 + x, yy + wave);
+                    }
+                    ctx.stroke();
+                }
+                ctx.restore();
+            }
+
+            // 3. Small rising heat distortion dots — sparse, only over source
+            heatwaveParticles.forEach(p => {
+                const now = Date.now();
+                if (now - p.born > p.lifespan) { p.born = now; p.lifespan = 2500 + Math.random() * 2000; }
+                if (p.code !== src) return; // only source state gets particles
+                const age = (now - p.born) / p.lifespan;
+                const sd = stateData[p.code];
+                if (!sd) return;
+                const pt2 = latLngToXY(sd.center[0] + p.oy, sd.center[1] + p.ox);
+                const rise = age * 35;
+                const alpha = Math.sin(age * Math.PI) * 0.35 * p.intensity;
+                ctx.beginPath();
+                ctx.arc(pt2.x, pt2.y - rise, 4 + age * 6, 0, Math.PI * 2);
+                const hg = ctx.createRadialGradient(pt2.x, pt2.y - rise, 0, pt2.x, pt2.y - rise, 4 + age * 6);
+                hg.addColorStop(0, `rgba(255,100,0,${alpha})`);
+                hg.addColorStop(1, `rgba(255,160,0,0)`);
+                ctx.fillStyle = hg;
+                ctx.fill();
             });
         }
 
-        let frameCount = 0;
-        function animateLoop() {
-            frameCount++;
-            if (currentScenario === 'rain') drawRain();
-            else if (currentScenario === 'cyclone') drawCyclone(frameCount);
-            else if (currentScenario === 'fog') drawFog();
-            else ctx.clearRect(0, 0, canvas.width, canvas.height);
-            phenomenaAnimId = requestAnimationFrame(animateLoop);
+        // ── RAIN: realistic storm cloud + rain only over source region ──
+        function initRainParticles() {
+            rainParticles = [];
+            for (let i = 0; i < 220; i++) {
+                rainParticles.push({
+                    x: 0, y: 0, init: false,
+                    speed: 5 + Math.random() * 5,
+                    len: 9 + Math.random() * 10,
+                    alpha: 0.35 + Math.random() * 0.45,
+                    wx: (Math.random() - 0.5) * 1.5,
+                });
+            }
         }
-        animateLoop();
 
-        // ─── SCENARIO BUTTONS ───
-        function setScenario(type) {
-            currentScenario = type;
-            ['heat', 'rain', 'cyclone', 'fog'].forEach(t => {
-                const btn = document.getElementById('btn-' + t);
-                btn.className = 'scenario-btn';
-                if (t === type) btn.classList.add('active-' + t);
+        function drawRain(t) {
+            if (!layerState.rain) return;
+            const src = sourceRegion || 'MH';
+            const sd = stateData[src];
+            if (!sd) return;
+
+            const pt = latLngToXY(sd.center[0], sd.center[1]);
+            const CW = 200, CH = 180; // cloud + rain bounding box
+            const cx0 = pt.x - CW / 2, cy0 = pt.y - CH * 0.55;
+
+            ctx.save();
+            // Clip to source-region ellipse only
+            ctx.beginPath();
+            ctx.ellipse(pt.x, pt.y, CW / 2 + 10, CH / 2 + 10, 0, 0, Math.PI * 2);
+            ctx.clip();
+
+            // ── Draw storm cloud shape (3 overlapping circles + dark base) ──
+            const cloudY = cy0 + 20;
+            // Cloud dark underbelly
+            const bellyGrad = ctx.createLinearGradient(cx0, cloudY + 30, cx0, cloudY + 80);
+            bellyGrad.addColorStop(0, 'rgba(60,80,110,0.72)');
+            bellyGrad.addColorStop(1, 'rgba(40,60,90,0.10)');
+            ctx.beginPath();
+            ctx.ellipse(pt.x, cloudY + 55, CW * 0.48, 38, 0, 0, Math.PI * 2);
+            ctx.fillStyle = bellyGrad;
+            ctx.fill();
+
+            // Main cloud puffs
+            const puffs = [
+                { ox: 0, oy: 0, r: 52 },
+                { ox: -55, oy: 22, r: 38 },
+                { ox: 55, oy: 22, r: 38 },
+                { ox: -25, oy: 16, r: 44 },
+                { ox: 28, oy: 14, r: 44 },
+                { ox: 0, oy: 28, r: 42 },
+            ];
+            puffs.forEach(p => {
+                const pg = ctx.createRadialGradient(pt.x + p.ox, cloudY + p.oy, 0, pt.x + p.ox, cloudY + p.oy, p.r);
+                pg.addColorStop(0, 'rgba(90,110,145,0.82)');
+                pg.addColorStop(0.6, 'rgba(70,90,125,0.65)');
+                pg.addColorStop(1, 'rgba(60,80,115,0)');
+                ctx.beginPath();
+                ctx.arc(pt.x + p.ox, cloudY + p.oy, p.r, 0, Math.PI * 2);
+                ctx.fillStyle = pg;
+                ctx.fill();
             });
 
-            if (type === 'rain') { initRain(); }
-            else if (type === 'cyclone') { initCyclone(); }
-            else if (type === 'fog') { initFog(); }
+            // Lightning flash effect (random)
+            if (Math.random() < 0.012) {
+                ctx.save();
+                ctx.globalAlpha = 0.55;
+                ctx.strokeStyle = '#E8F4FF';
+                ctx.lineWidth = 1.5;
+                ctx.shadowColor = '#B3D9FF';
+                ctx.shadowBlur = 8;
+                const lx = pt.x + (Math.random() - 0.5) * 80;
+                const ly = cloudY + 55;
+                ctx.beginPath();
+                ctx.moveTo(lx, ly);
+                ctx.lineTo(lx - 8, ly + 22);
+                ctx.lineTo(lx + 4, ly + 22);
+                ctx.lineTo(lx - 10, ly + 48);
+                ctx.stroke();
+                ctx.restore();
+            }
 
-            drawHeatmap();
+            // Rain streaks — confined inside clip
+            const rainTop = cloudY + 70;
+            const rainBot = pt.y + CH * 0.45;
+            rainParticles.forEach(p => {
+                if (!p.init || p.y > rainBot) {
+                    p.x = cx0 + Math.random() * CW;
+                    p.y = rainTop + Math.random() * 30;
+                    p.init = true;
+                }
+                p.y += p.speed;
+                p.x += p.wx;
+                ctx.beginPath();
+                ctx.moveTo(p.x, p.y);
+                ctx.lineTo(p.x + p.wx * 1.5, p.y + p.len);
+                ctx.strokeStyle = `rgba(140,200,255,${p.alpha})`;
+                ctx.lineWidth = 1;
+                ctx.stroke();
+            });
+
+            // Ground mist / splash at bottom
+            const mistGrad = ctx.createLinearGradient(cx0, rainBot - 10, cx0, rainBot + 20);
+            mistGrad.addColorStop(0, 'rgba(120,180,230,0.12)');
+            mistGrad.addColorStop(1, 'rgba(120,180,230,0)');
+            ctx.fillStyle = mistGrad;
+            ctx.fillRect(cx0, rainBot - 10, CW, 30);
+
+            ctx.restore();
+
+            // Region label badge under cloud
+            ctx.save();
+            ctx.fillStyle = 'rgba(20,60,120,0.75)';
+            ctx.beginPath();
+            ctx.roundRect(pt.x - 42, pt.y + CH * 0.45 + 4, 84, 18, 9);
+            ctx.fill();
+            ctx.fillStyle = '#C8E6FF';
+            ctx.font = 'bold 10px Segoe UI';
+            ctx.textAlign = 'center';
+            ctx.fillText('⚡ Heavy Rainfall', pt.x, pt.y + CH * 0.45 + 15);
+            ctx.restore();
+        }
+
+        // ── CYCLONE: satellite-style spiral on ocean, coastal impact on land ──
+        function initCycloneParticles() {
+            cycloneParticles = [];
+            // Spiral arm particles
+            for (let arm = 0; arm < 4; arm++) {
+                for (let i = 0; i < 80; i++) {
+                    const frac = i / 80;
+                    cycloneParticles.push({
+                        arm,
+                        frac,
+                        baseAngle: arm * (Math.PI / 2) + frac * Math.PI * 3.5,
+                        baseRadius: 18 + frac * 155,
+                        alpha: (1 - frac) * 0.8,
+                        width: 4 + frac * 14,
+                        colorFrac: frac,
+                    });
+                }
+            }
+        }
+
+        // Coast states that feel cyclone effect (Bay of Bengal side)
+        const COAST_STATES = ['OD', 'WB', 'AP', 'TN', 'KL', 'MH', 'GA', 'GJ'];
+
+        function drawCyclone(t) {
+            const src = sourceRegion || 'OD';
+            const sd = stateData[src];
+            if (!sd) return;
+
+            // Place cyclone CENTER in the ocean near the coast of source state
+            // Offset toward sea (east for east-coast states, west for west-coast)
+            const isWestCoast = ['KL', 'KA', 'GA', 'MH', 'GJ', 'DD', 'DN'].includes(src);
+            const oceanLat = sd.center[0] - 1.5;
+            const oceanLng = isWestCoast ? sd.center[1] - 5.5 : sd.center[1] + 5.5;
+            const op = latLngToXY(oceanLat, oceanLng);
+            const cx = op.x, cy = op.y;
+
+            const rot = t * 0.0012; // slow rotation
+
+            // ── 1. Outer rain-band glow (like satellite IR false-color) ──
+            const outerSize = 180;
+            const outerGrad = ctx.createRadialGradient(cx, cy, 30, cx, cy, outerSize);
+            outerGrad.addColorStop(0, 'rgba(220,90,20,0.0)');
+            outerGrad.addColorStop(0.35, 'rgba(220,120,20,0.22)');
+            outerGrad.addColorStop(0.6, 'rgba(160,200,60,0.18)');
+            outerGrad.addColorStop(0.82, 'rgba(60,160,200,0.12)');
+            outerGrad.addColorStop(1, 'rgba(20,100,180,0)');
+            ctx.beginPath();
+            ctx.arc(cx, cy, outerSize, 0, Math.PI * 2);
+            ctx.fillStyle = outerGrad;
+            ctx.fill();
+
+            // ── 2. Spiral arms (convective bands — red/orange like INSAT IR) ──
+            ctx.save();
+            cycloneParticles.forEach(p => {
+                const angle = p.baseAngle + rot + p.arm * 0.02;
+                const r = p.baseRadius;
+                const x = cx + Math.cos(angle) * r;
+                const y = cy + Math.sin(angle) * r * 0.72; // slight ellipse
+
+                // Color mimics INSAT thermal: cold tops = white/yellow, warm = orange/red
+                const cf = p.colorFrac;
+                let rc, gc, bc;
+                if (cf < 0.25) { rc = 255; gc = 80 + cf * 400; bc = 0; }       // deep orange-red core
+                else if (cf < 0.5) { rc = 255; gc = 180 + cf * 200; bc = 50; }  // yellow-orange
+                else if (cf < 0.75) { rc = 180 - cf * 100; gc = 220; bc = 80; } // yellow-green
+                else { rc = 80; gc = 160; bc = 220; }                         // blue-grey outer
+
+                ctx.beginPath();
+                ctx.arc(x, y, p.width * (0.6 + 0.4 * Math.sin(rot * 3 + p.frac * 8)), 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(${Math.round(rc)},${Math.round(gc)},${Math.round(bc)},${p.alpha * 0.7})`;
+                ctx.fill();
+            });
+            ctx.restore();
+
+            // ── 3. Dense eye-wall ring ──
+            const ewGrad = ctx.createRadialGradient(cx, cy, 14, cx, cy, 38);
+            ewGrad.addColorStop(0, 'rgba(255,255,255,0.95)');
+            ewGrad.addColorStop(0.45, 'rgba(255,240,200,0.85)');
+            ewGrad.addColorStop(0.7, 'rgba(255,160,60,0.5)');
+            ewGrad.addColorStop(1, 'rgba(200,80,0,0)');
+            ctx.beginPath();
+            ctx.arc(cx, cy, 38, 0, Math.PI * 2);
+            ctx.fillStyle = ewGrad;
+            ctx.fill();
+
+            // Eye — calm clear center
+            const eyeGrad = ctx.createRadialGradient(cx, cy, 0, cx, cy, 15);
+            eyeGrad.addColorStop(0, 'rgba(255,255,255,1)');
+            eyeGrad.addColorStop(0.6, 'rgba(220,235,255,0.9)');
+            eyeGrad.addColorStop(1, 'rgba(160,200,255,0)');
+            ctx.beginPath();
+            ctx.arc(cx, cy, 15, 0, Math.PI * 2);
+            ctx.fillStyle = eyeGrad;
+            ctx.fill();
+
+            // ── 4. Cyclone label on ocean ──
+            ctx.save();
+            ctx.fillStyle = 'rgba(10,20,50,0.75)';
+            ctx.beginPath();
+            ctx.roundRect(cx - 55, cy + 195, 110, 22, 11);
+            ctx.fill();
+            ctx.fillStyle = '#FFE082';
+            ctx.font = 'bold 10px Segoe UI';
+            ctx.textAlign = 'center';
+            ctx.fillText('🌀 Cyclone — Bay of Bengal', cx, cy + 209);
+            ctx.restore();
+
+            // ── 5. Coastal impact — wavy surge lines on coast states ──
+            const coastAffected = COAST_STATES.filter(c =>
+                !sourceRegion || c === src || (adjacency[src] || []).includes(c)
+            ).slice(0, 5);
+
+            coastAffected.forEach((code, idx) => {
+                const csd = stateData[code];
+                if (!csd) return;
+                const cpt = latLngToXY(csd.center[0], csd.center[1]);
+                const waveAlpha = code === src ? 0.30 : 0.14;
+                const waveR = code === src ? 90 : 55;
+
+                // Surge glow
+                const surgeGrad = ctx.createRadialGradient(cpt.x, cpt.y, 0, cpt.x, cpt.y, waveR);
+                surgeGrad.addColorStop(0, `rgba(100,150,255,${waveAlpha})`);
+                surgeGrad.addColorStop(0.5, `rgba(80,120,220,${waveAlpha * 0.5})`);
+                surgeGrad.addColorStop(1, 'rgba(60,100,200,0)');
+                ctx.beginPath();
+                ctx.arc(cpt.x, cpt.y, waveR, 0, Math.PI * 2);
+                ctx.fillStyle = surgeGrad;
+                ctx.fill();
+
+                // Wave ring
+                const ringR = waveR * 0.65 + Math.sin(t * 0.003 + idx) * 8;
+                ctx.beginPath();
+                ctx.arc(cpt.x, cpt.y, ringR, 0, Math.PI * 2);
+                ctx.strokeStyle = `rgba(100,180,255,${waveAlpha * 1.2})`;
+                ctx.lineWidth = 1.5;
+                ctx.setLineDash([5, 4]);
+                ctx.stroke();
+                ctx.setLineDash([]);
+            });
+        }
+
+        // ── FOG ──
+        function initFogParticles() {
+            fogParticles = [];
+            for (let i = 0; i < 50; i++) {
+                fogParticles.push({ x: Math.random(), y: Math.random(), r: 80 + Math.random() * 120, dx: .1 + Math.random() * .2, alpha: .06 + Math.random() * .10 });
+            }
+        }
+
+        function drawFog(t) {
+            const src = sourceRegion || 'HR';
+            const sd = stateData[src];
+            if (!sd) return;
+            const pt = latLngToXY(sd.center[0], sd.center[1]);
+            const W = canvas.width, H = canvas.height;
+            fogParticles.forEach(p => {
+                const x = pt.x - 150 + p.x * 300, y = pt.y - 100 + p.y * 200;
+                const fg = ctx.createRadialGradient(x, y, 0, x, y, p.r + Math.sin(t * 0.001 + p.x * 10) * 10);
+                fg.addColorStop(0, `rgba(210,230,240,${p.alpha})`);
+                fg.addColorStop(1, 'rgba(210,230,240,0)');
+                ctx.beginPath();
+                ctx.arc(x, y, p.r, 0, Math.PI * 2);
+                ctx.fillStyle = fg;
+                ctx.fill();
+                p.x = (p.x + p.dx * 0.001) % 1;
+            });
+        }
+
+        // Wind vectors
+        function drawWindVectors() {
+            if (!layerState.wind || windDelta < 20) return;
+            const arrows = Object.entries(stateData).slice(0, 14);
+            arrows.forEach(([code, s]) => {
+                const pt = latLngToXY(s.center[0], s.center[1]);
+                const len = 20 + windDelta * 0.15;
+                const ang = currentScenario === 'cyclone' ? Math.atan2(pt.y - canvas.height / 2, pt.x - canvas.width / 2) + 1.5 : -0.5;
+                ctx.beginPath();
+                ctx.moveTo(pt.x, pt.y);
+                ctx.lineTo(pt.x + Math.cos(ang) * len, pt.y + Math.sin(ang) * len);
+                ctx.strokeStyle = 'rgba(100,150,200,0.5)';
+                ctx.lineWidth = 1.2;
+                ctx.stroke();
+                // arrowhead
+                const ex = pt.x + Math.cos(ang) * len, ey = pt.y + Math.sin(ang) * len;
+                ctx.beginPath();
+                ctx.moveTo(ex, ey);
+                ctx.lineTo(ex + Math.cos(ang + 2.4) * 5, ey + Math.sin(ang + 2.4) * 5);
+                ctx.moveTo(ex, ey);
+                ctx.lineTo(ex + Math.cos(ang - 2.4) * 5, ey + Math.sin(ang - 2.4) * 5);
+                ctx.stroke();
+            });
+        }
+
+        // ── MAIN ANIMATION LOOP ──
+        function animate(t) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            if (currentScenario === 'heat') drawHeatwave(t);
+            else if (currentScenario === 'rain') drawRain(t);
+            else if (currentScenario === 'cyclone') drawCyclone(t);
+            else if (currentScenario === 'fog') drawFog(t);
+            drawWindVectors();
+            animFrame = requestAnimationFrame(animate);
+        }
+
+        function startAnimation() {
+            if (animFrame) cancelAnimationFrame(animFrame);
+            if (currentScenario === 'heat') initHeatwaveParticles();
+            else if (currentScenario === 'rain') initRainParticles();
+            else if (currentScenario === 'cyclone') initCycloneParticles();
+            else if (currentScenario === 'fog') initFogParticles();
+            animFrame = requestAnimationFrame(animate);
+        }
+        startAnimation();
+
+        // ─── SCENARIO CONTROLS ─────────────────────────────────────────────────
+        function setScenario(s) {
+            currentScenario = s;
+            ['heat', 'rain', 'cyclone', 'fog'].forEach(x => {
+                const btn = document.getElementById('btn-' + x);
+                btn.className = 'scenario-btn' + (x === s ? ' active-' + x : '');
+            });
             updateLegend();
-            updateRiskBars();
+            updateInfoBar();
+            startAnimation();
         }
 
         function updateLegend() {
-            if (currentScenario === 'rain') {
-                document.getElementById('legend-title').textContent = 'Rainfall Intensity (mm/hr)';
-                document.getElementById('legend-grad').style.background = 'linear-gradient(90deg,#F0F8FF,#87CEEB,#00BFFF,#0055FF,#000088)';
-                document.getElementById('legend-min').textContent = '0';
-                document.getElementById('legend-mid').textContent = '15';
-                document.getElementById('legend-max').textContent = '50+';
-            } else if (currentScenario === 'cyclone') {
-                document.getElementById('legend-title').textContent = 'Wind Speed (km/h)';
-                document.getElementById('legend-grad').style.background = 'linear-gradient(90deg,#E8D5F0,#C080F0,#8800CC,#440066)';
-                document.getElementById('legend-min').textContent = '0';
-                document.getElementById('legend-mid').textContent = '100';
-                document.getElementById('legend-max').textContent = '200+';
-            } else if (currentScenario === 'fog') {
-                document.getElementById('legend-title').textContent = 'Temperature Anomaly (°C)';
-                document.getElementById('legend-grad').style.background = 'linear-gradient(90deg,#0066FF,#00BFFF,#88EEFF,#FFFFFF)';
-                document.getElementById('legend-min').textContent = '−4°';
-                document.getElementById('legend-mid').textContent = '−2°';
-                document.getElementById('legend-max').textContent = '0°';
-            } else {
-                document.getElementById('legend-title').textContent = 'Temperature Anomaly (°C)';
-                document.getElementById('legend-grad').style.background = 'linear-gradient(90deg,#00BFFF,#00FF88,#FFFF00,#FF8800,#FF2200)';
-                document.getElementById('legend-min').textContent = '−4°';
-                document.getElementById('legend-mid').textContent = '0°';
-                document.getElementById('legend-max').textContent = '+4°';
-            }
+            const m = {
+                heat: { title: 'Surface Temperature (°C)', bar: 'linear-gradient(90deg,#4FC3F7,#AED581,#FFF176,#FF7043,#B71C1C)', min: '15°C', mid: '30°C', max: '45°C' },
+                rain: { title: 'Rainfall Intensity (mm/day)', bar: 'linear-gradient(90deg,#E3F2FD,#42A5F5,#1565C0,#0D47A1,#01002A)', min: '0', mid: '20', max: '50+' },
+                cyclone: { title: 'Wind Speed (km/h)', bar: 'linear-gradient(90deg,#F3E5F5,#CE93D8,#9C27B0,#6A1B9A,#2D0045)', min: '0', mid: '100', max: '220+' },
+                fog: { title: 'Visibility (km)', bar: 'linear-gradient(90deg,#263238,#607D8B,#90A4AE,#CFD8DC,#ECEFF1)', min: '0', mid: '2', max: '10+' },
+            };
+            const d = m[currentScenario];
+            document.getElementById('legTitle').textContent = d.title;
+            document.getElementById('legBar').style.background = d.bar;
+            document.getElementById('legMin').textContent = d.min;
+            document.getElementById('legMid').textContent = d.mid;
+            document.getElementById('legMax').textContent = d.max;
         }
 
-        // ─── SLIDERS ───
-        function updateTempVal(v) {
-            tempDelta = v / 10;
-            const display = (tempDelta >= 0 ? '+' : '') + tempDelta.toFixed(1) + '°C';
-            document.getElementById('temp-val').textContent = display;
-            document.getElementById('bar-delta').textContent = display;
-            drawHeatmap();
+        // ─── INFO BAR ──────────────────────────────────────────────────────────
+        function updateInfoBar() {
+            const src = stateData[sourceRegion];
+            const tgt = stateData[targetRegion];
+            document.getElementById('iSrc').textContent = src ? src.label : '—';
+            document.getElementById('iTgt').textContent = tgt ? tgt.label : '—';
+            const td = parseFloat(tempDelta) || 0;
+            const el = document.getElementById('iAnomaly');
+            el.textContent = (td >= 0 ? '+' : '') + td.toFixed(1) + '°C';
+            el.className = 'info-val' + (td > 0 ? ' hot' : td < 0 ? ' rain' : '');
         }
 
-        function updateRainVal(v) {
-            rainDelta = parseInt(v);
-            document.getElementById('rain-val').textContent = (rainDelta >= 0 ? '+' : '') + rainDelta + '%';
+        // ─── SOURCE DROPDOWN ──────────────────────────────────────────────────
+        document.getElementById('sourceRegion').addEventListener('change', function () {
+            sourceRegion = this.value;
+            updateMarkers();
+            drawArrows(sourceRegion, targetRegion);
+            updateInfoBar();
+            startAnimation();
+        });
+        document.getElementById('targetRegion').addEventListener('change', function () {
+            targetRegion = this.value;
+            document.getElementById('rpTargetBadge').textContent = 'Target: ' + (stateData[targetRegion]?.label || targetRegion);
+            drawArrows(sourceRegion, targetRegion);
+            updateInfoBar();
+            drawRightPanel();
+        });
+
+        function updateMarkers() {
+            Object.entries(stateData).forEach(([code, s]) => {
+                const t = getStateTemp(code);
+                const col = tempToColor(t, code === sourceRegion ? 0.75 : code === targetRegion ? 0.65 : 0.5);
+                stateMarkers[code].setStyle({ fillColor: col, fillOpacity: code === sourceRegion ? 0.75 : 0.5, color: code === sourceRegion ? '#E65100' : code === targetRegion ? '#1565C0' : 'rgba(100,130,180,0.4)', weight: code === sourceRegion || code === targetRegion ? 2 : 1 });
+            });
         }
 
-        function updateWindVal(v) {
-            windDelta = parseInt(v);
-            document.getElementById('wind-val').textContent = '+' + windDelta + ' km/h';
+        // ─── LAYER TOGGLES ─────────────────────────────────────────────────────
+        function toggleLayer(name) {
+            layerState[name] = !layerState[name];
+            const el = document.getElementById('tog-' + name);
+            el.classList.toggle('on', layerState[name]);
+            if (name === 'temp') { Object.values(stateMarkers).forEach(m => m.setStyle({ fillOpacity: layerState.temp ? 0.55 : 0 })); }
         }
 
-        // ─── REGION ───
-        function updateSourceRegion() {
-            sourceRegion = document.getElementById('source-region').value;
-            const st = stateData[sourceRegion];
-            document.getElementById('bar-src-temp').textContent = st ? st.baseTemp + '°C' : '—';
-            drawHeatmap();
-            drawArrows();
-        }
-
-        function updateTarget() {
-            targetRegion = document.getElementById('target-region').value;
-            const st = stateData[targetRegion];
-            document.getElementById('bar-tgt').textContent = st ? st.label : '—';
-            document.getElementById('ripple-target-name').textContent = st ? st.label : '—';
-            document.getElementById('forecast-city').textContent = (st ? st.label.split(' ')[0] : 'Target') + ' City';
-            drawHeatmap();
-            drawArrows();
-            drawMiniMaps();
-            updateForecastChart();
-        }
-
-        // ─── MINI MAPS ───
-        function drawMiniMap(canvasId, isSimulated) {
+        // ─── MINI MAPS ─────────────────────────────────────────────────────────
+        function drawMiniMap(canvasId, simulated) {
             const c = document.getElementById(canvasId);
+            if (!c) return;
             const cx = c.getContext('2d');
-            cx.clearRect(0, 0, c.width, c.height);
-            // Simple stylized India silhouette with color blobs
-            const states = Object.values(stateData);
-            // Map lat/lng to canvas coords for mini map
-            states.forEach((st, i) => {
-                const x = ((st.center[1] - 68) / 30) * c.width;
-                const y = ((37 - st.center[0]) / 30) * c.height;
-                const isTarget = Object.keys(stateData)[i] === targetRegion;
-                const isSource = Object.keys(stateData)[i] === sourceRegion;
-                const baseTemp = st.baseTemp + (isSimulated ? (isTarget ? tempDelta * 0.65 : isSource ? tempDelta : tempDelta * 0.2) : 0);
-                const color = baseTemp >= 37 ? '#FF2200' : baseTemp >= 34 ? '#FF8800' : baseTemp >= 31 ? '#FFFF00' : '#00FF88';
+            c.width = 110; c.height = 80;
+            cx.fillStyle = '#f0f4f8'; cx.fillRect(0, 0, 110, 80);
+            // Draw India outline approximation
+            cx.fillStyle = '#e0e8f0'; cx.fillRect(10, 5, 90, 70);
+            Object.entries(stateData).slice(0, 30).forEach(([code, s]) => {
+                const nx = (s.center[1] - 68) * 1.8 + 5;
+                const ny = (38 - s.center[0]) * 1.5 + 5;
+                if (nx < 5 || nx > 105 || ny < 5 || ny > 75) return;
+                const t = simulated ? getStateTemp(code) : s.baseTemp;
                 cx.beginPath();
-                cx.arc(x, y, isTarget || isSource ? 9 : 6, 0, Math.PI * 2);
-                cx.fillStyle = color + (isSimulated ? 'CC' : '99');
+                cx.arc(nx, ny, 4, 0, Math.PI * 2);
+                cx.fillStyle = tempToColor(t, 0.8);
                 cx.fill();
-                if (isTarget) {
-                    cx.strokeStyle = '#FFFFFF';
-                    cx.lineWidth = 1.5;
-                    cx.stroke();
+                if (code === targetRegion) {
+                    cx.beginPath(); cx.arc(nx, ny, 6, 0, Math.PI * 2);
+                    cx.strokeStyle = '#1565C0'; cx.lineWidth = 1.5; cx.stroke();
                 }
             });
         }
 
-        function drawMiniMaps() {
-            drawMiniMap('mini-baseline', false);
-            drawMiniMap('mini-simulated', true);
-        }
-        drawMiniMaps();
-
-        // ─── FORECAST CHART ───
-        function updateForecastChart() {
-            const canvas = document.getElementById('forecast-chart');
-            const cx = canvas.getContext('2d');
-            cx.clearRect(0, 0, canvas.width, canvas.height);
-
-            const st = stateData[targetRegion] || stateData['UP'];
-            const baselineTemps = [21, 21, 15, 4, 2, 3];
-            const simDelta = tempDelta * 0.65;
-            const simTemps = baselineTemps.map((v, i) => v + simDelta * (1 - i * 0.1));
-
-            const days = ['5d', '1d', '2d', '3d', '4d', '5d'];
-            const W = canvas.width, H = canvas.height;
-            const padL = 28, padR = 8, padT = 8, padB = 20;
-            const chartW = W - padL - padR;
-            const chartH = H - padT - padB;
-
-            const allVals = [...baselineTemps, ...simTemps];
-            const minV = Math.min(...allVals) - 2;
-            const maxV = Math.max(...allVals) + 2;
-
-            function toX(i) { return padL + (i / (days.length - 1)) * chartW; }
-            function toY(v) { return padT + chartH - ((v - minV) / (maxV - minV)) * chartH; }
-
+        // ─── FORECAST CHART ────────────────────────────────────────────────────
+        function drawForecastChart() {
+            const c = document.getElementById('forecastChart');
+            const cx = c.getContext('2d');
+            const W = c.width = 256, H = c.height = 110;
+            cx.clearRect(0, 0, W, H);
+            const tgt = stateData[targetRegion];
+            if (!tgt) return;
+            const base = tgt.baseTemp;
+            const baseArr = [base - 0.3, base + 0.2, base - 0.1, base + 0.4, base - 0.2];
+            const simArr = baseArr.map((v, i) => v + (parseFloat(tempDelta) || 0) * (0.5 + i * 0.1));
+            const pad = 28, bw = W - pad * 2, bh = H - pad * 1.5;
+            const minV = Math.min(...baseArr, ...simArr) - 1, maxV = Math.max(...baseArr, ...simArr) + 1;
+            const toX = i => pad + i * (bw / 4);
+            const toY = v => H - pad * 0.5 - (v - minV) / (maxV - minV) * bh;
             // Grid
-            cx.strokeStyle = 'rgba(30,64,128,0.4)';
-            cx.lineWidth = 0.5;
+            cx.strokeStyle = 'rgba(0,0,0,0.08)'; cx.lineWidth = 1;
             for (let i = 0; i <= 4; i++) {
-                const y = padT + (i / 4) * chartH;
-                cx.beginPath(); cx.moveTo(padL, y); cx.lineTo(W - padR, y); cx.stroke();
+                const y = H - pad * 0.5 - i * (bh / 4);
+                cx.beginPath(); cx.moveTo(pad, y); cx.lineTo(W - pad, y); cx.stroke();
             }
-
-            // Baseline line
-            cx.beginPath();
-            cx.strokeStyle = '#4466FF';
-            cx.lineWidth = 2;
-            baselineTemps.forEach((v, i) => {
-                const x = toX(i); const y = toY(v);
-                i === 0 ? cx.moveTo(x, y) : cx.lineTo(x, y);
-            });
+            // Labels
+            cx.fillStyle = '#7a90a8'; cx.font = '9px Segoe UI'; cx.textAlign = 'center';
+            ['t+1', 't+2', 't+3', 't+4', 't+5'].forEach((l, i) => cx.fillText(l, toX(i), H - 4));
+            cx.textAlign = 'right';
+            for (let i = 0; i <= 4; i++) cx.fillText((minV + i * (maxV - minV) / 4).toFixed(1), pad - 2, H - pad * 0.5 - i * (bh / 4) + 3);
+            // Baseline
+            cx.beginPath(); cx.strokeStyle = '#1565C0'; cx.lineWidth = 2;
+            baseArr.forEach((v, i) => i ? cx.lineTo(toX(i), toY(v)) : cx.moveTo(toX(i), toY(v)));
             cx.stroke();
-
-            // Dots baseline
-            baselineTemps.forEach((v, i) => {
-                cx.beginPath();
-                cx.arc(toX(i), toY(v), 3, 0, Math.PI * 2);
-                cx.fillStyle = '#4466FF';
-                cx.fill();
-                cx.fillStyle = '#7ba3d0';
-                cx.font = '8px sans-serif';
-                cx.fillText(v, toX(i) - 4, toY(v) - 5);
+            baseArr.forEach((v, i) => {
+                cx.beginPath(); cx.arc(toX(i), toY(v), 3, 0, Math.PI * 2);
+                cx.fillStyle = '#1565C0'; cx.fill();
+                cx.fillStyle = '#1565C0'; cx.font = '8px Segoe UI'; cx.textAlign = 'center';
+                cx.fillText(v.toFixed(1), toX(i), toY(v) - 6);
             });
-
-            // Simulated line
-            cx.beginPath();
-            cx.strokeStyle = '#FF6633';
-            cx.lineWidth = 2;
-            simTemps.forEach((v, i) => {
-                const x = toX(i); const y = toY(v);
-                i === 0 ? cx.moveTo(x, y) : cx.lineTo(x, y);
-            });
+            // Simulated
+            cx.beginPath(); cx.strokeStyle = '#E65100'; cx.lineWidth = 2;
+            simArr.forEach((v, i) => i ? cx.lineTo(toX(i), toY(v)) : cx.moveTo(toX(i), toY(v)));
             cx.stroke();
-
-            // Dots sim
-            simTemps.forEach((v, i) => {
-                cx.beginPath();
-                cx.arc(toX(i), toY(v), 3, 0, Math.PI * 2);
-                cx.fillStyle = '#FF6633';
-                cx.fill();
-                cx.fillStyle = '#FF9977';
-                cx.font = '8px sans-serif';
-                cx.fillText(Math.round(v), toX(i) - 4, toY(v) - 5);
-            });
-
-            // X labels
-            cx.fillStyle = '#3d6291';
-            cx.font = '8px sans-serif';
-            days.forEach((d, i) => {
-                cx.fillText(d, toX(i) - 7, H - 3);
+            simArr.forEach((v, i) => {
+                cx.beginPath(); cx.arc(toX(i), toY(v), 3, 0, Math.PI * 2);
+                cx.fillStyle = '#E65100'; cx.fill();
+                cx.fillStyle = '#E65100'; cx.font = '8px Segoe UI'; cx.textAlign = 'center';
+                cx.fillText(v.toFixed(1), toX(i), toY(v) - 6);
             });
         }
-        updateForecastChart();
 
-        // ─── RISK BARS ───
+        // ─── RIGHT PANEL UPDATE ────────────────────────────────────────────────
+        function drawRightPanel() {
+            drawMiniMap('miniBaseline', false);
+            drawMiniMap('miniSimulated', true);
+            drawForecastChart();
+        }
+        drawRightPanel();
+
+        // ─── RISK / IMPACT UPDATE ──────────────────────────────────────────────
         function updateRiskBars() {
-            const scenario = currentScenario;
             const risks = {
-                heat: { heat: 82, flood: 18, cyc: 5, cold: 10 },
-                rain: { heat: 15, flood: 75, cyc: 12, cold: 5 },
-                cyclone: { heat: 22, flood: 60, cyc: 88, cold: 3 },
-                fog: { heat: 5, flood: 8, cyc: 2, cold: 78 }
+                heat: { heat: 72, flood: 15, cyclone: 5, cold: 3 },
+                rain: { heat: 8, flood: 78, cyclone: 12, cold: 10 },
+                cyclone: { heat: 12, flood: 55, cyclone: 85, cold: 5 },
+                fog: { heat: 5, flood: 8, cyclone: 2, cold: 70 },
             };
-            const r = risks[scenario];
-            ['heat', 'flood', 'cyc', 'cold'].forEach(k => {
-                document.getElementById('risk-' + k).style.width = r[k] + '%';
-                document.getElementById('rval-' + k).textContent = r[k] + '%';
-            });
-        }
-
-        // ─── LAYER TOGGLES ───
-        function toggleLayer(row, layerName) {
-            row.classList.toggle('active');
-            const tog = row.querySelector('.toggle-switch');
-            tog.classList.toggle('on');
-            // Here you'd toggle actual map layers; placeholder for AI integration
-        }
-
-        // ─── TIMELINE PLAYBACK ───
-        let timelineDay = 0;
-        let playing = false;
-        let playInterval = null;
-
-        function setTimelineDay(day) {
-            timelineDay = day;
-            const pct = (day / 4) * 100;
-            document.getElementById('tl-fill').style.width = pct + '%';
-            document.getElementById('tl-thumb').style.left = pct + '%';
-            document.getElementById('day-label').textContent = day + 1;
-            for (let i = 0; i < 5; i++) {
-                const el = document.getElementById('tl-' + i);
-                el.classList.toggle('active', i === day);
+            const r = risks[currentScenario];
+            function setRisk(id, barId, val, col) {
+                document.getElementById(id).textContent = val + '%';
+                document.getElementById(barId).style.width = val + '%';
+                document.getElementById(barId).style.background = col;
             }
-            // Update heatmap intensity with day
-            const factor = 1 + (day * 0.1);
-            // Future: feed this into AI model
+            setRisk('riskHeat', 'rfHeat', r.heat, '#FF3D00');
+            setRisk('riskFlood', 'rfFlood', r.flood, '#0288D1');
+            setRisk('riskCyclone', 'rfCyclone', r.cyclone, '#6A1B9A');
+            setRisk('riskCold', 'rfCold', r.cold, '#546E7A');
         }
+
+        function updateImpacts() {
+            const impacts = {
+                heat: { agri: '-9%', water: '-15%', energy: '+22%', health: '-18%', ac: 'neg', wc: 'neg', ec: 'pos', hc: 'neg' },
+                rain: { agri: '+12%', water: '+18%', energy: '-8%', health: '-10%', ac: 'pos', wc: 'pos', ec: 'warn', hc: 'warn' },
+                cyclone: { agri: '-25%', water: '-20%', energy: '-30%', health: '-35%', ac: 'neg', wc: 'neg', ec: 'neg', hc: 'neg' },
+                fog: { agri: '-5%', water: '+2%', energy: '+8%', health: '-6%', ac: 'warn', wc: 'pos', ec: 'warn', hc: 'warn' },
+            };
+            const im = impacts[currentScenario];
+            document.getElementById('impAgri').textContent = im.agri; document.getElementById('impAgri').className = 'impact-val ' + im.ac;
+            document.getElementById('impWater').textContent = im.water; document.getElementById('impWater').className = 'impact-val ' + im.wc;
+            document.getElementById('impEnergy').textContent = im.energy; document.getElementById('impEnergy').className = 'impact-val ' + im.ec;
+            document.getElementById('impHealth').textContent = im.health; document.getElementById('impHealth').className = 'impact-val ' + im.hc;
+        }
+
+        // ─── SIMULATION RUN ────────────────────────────────────────────────────
+        function runSimulation() {
+            if (simRunning) return;
+            if (!sourceRegion) { addNewsCard('⚠️ Please select a source region first.', 'info'); return; }
+            simRunning = true;
+            const btn = document.getElementById('runBtn');
+            btn.classList.add('running');
+            btn.innerHTML = '<span>⟳</span> Running ConvLSTM...';
+            const badge = document.getElementById('simBadge');
+            badge.style.display = 'block';
+            let day = 0;
+            const interval = setInterval(() => {
+                day++;
+                badge.textContent = `🔄 ConvLSTM Forecasting — Day ${day} of 3`;
+                if (day >= 3) {
+                    clearInterval(interval);
+                    simRunning = false;
+                    simHasRun = true;
+                    btn.classList.remove('running');
+                    btn.innerHTML = '<span>▶</span> Run Digital Twin Simulation';
+                    badge.style.display = 'none';
+                    document.getElementById('diffPill').style.display = 'block';
+                    updateMarkers();
+                    drawArrows(sourceRegion, targetRegion);
+                    updateInfoBar();
+                    updateRiskBars();
+                    updateImpacts();
+                    drawRightPanel();
+                    startAnimation();
+                    const srcLabel = stateData[sourceRegion]?.label || sourceRegion;
+                    const tgtLabel = stateData[targetRegion]?.label || targetRegion;
+                    const td = parseFloat(tempDelta) || 0;
+                    addNewsCard(`✅ Simulation complete. ${srcLabel} anomaly of ${(td >= 0 ? '+' : '') + td.toFixed(1)}°C propagated to ${tgtLabel} (${(td * 0.55).toFixed(1)}°C delta).`, currentScenario === 'heat' ? 'heat' : currentScenario === 'rain' ? 'rain' : currentScenario === 'cyclone' ? 'cyclone' : 'info');
+                    if (currentScenario === 'heat' && td > 0.8) addNewsCard(`🔥 IMD Alert: Severe heatwave conditions likely in ${tgtLabel} within 48hrs.`, 'heat');
+                    if (currentScenario === 'rain') addNewsCard(`🌧 IMD: Heavy rainfall advisory issued for ${tgtLabel} and adjoining districts.`, 'rain');
+                }
+            }, 900);
+        }
+
+        function addNewsCard(msg, type) {
+            const feed = document.getElementById('newsFeed');
+            const card = document.createElement('div');
+            card.className = 'news-card ' + type;
+            const sources = { heat: 'IMD-NHAC', rain: 'IMD-MCS', cyclone: 'IMD-CWC', info: 'SYSTEM' };
+            card.innerHTML = `<span class="news-source">${sources[type] || 'SYSTEM'} ${new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}</span>${msg}`;
+            feed.insertBefore(card, feed.firstChild);
+        }
+
+        // ─── TIMELINE ──────────────────────────────────────────────────────────
+        function setDay(d) {
+            timelineDay = d;
+            const pct = d / 4 * 100;
+            document.getElementById('tlFill').style.width = pct + '%';
+            document.getElementById('tlThumb').style.left = pct + '%';
+            document.getElementById('tlDayCounter').textContent = `Day ${d + 1} / 5`;
+            document.querySelectorAll('.tl-day').forEach((el, i) => el.classList.toggle('active', i === d));
+        }
+        document.querySelectorAll('.tl-day').forEach((el, i) => el.addEventListener('click', () => setDay(i)));
 
         function togglePlay() {
-            playing = !playing;
-            document.getElementById('play-btn').textContent = playing ? '⏸' : '▶';
-            if (playing) {
-                playInterval = setInterval(() => {
-                    timelineDay = (timelineDay + 1) % 5;
-                    setTimelineDay(timelineDay);
-                }, 1200);
+            tlPlaying = !tlPlaying;
+            document.getElementById('tlPlay').textContent = tlPlaying ? '⏸' : '▶';
+            if (tlPlaying) {
+                tlInterval = setInterval(() => { setDay((timelineDay + 1) % 5); }, 800);
             } else {
-                clearInterval(playInterval);
+                clearInterval(tlInterval);
             }
         }
 
-        setTimelineDay(0);
-
-        // ─── RUN SIMULATION ───
-        function runSimulation() {
-            if (isSimulating) return;
-            isSimulating = true;
-
-            const btn = document.getElementById('run-btn');
-            btn.classList.add('simulating');
-            btn.innerHTML = '⚙ Running ConvLSTM…';
-
-            const badge = document.getElementById('sim-badge');
-            badge.style.display = 'block';
-
-            let day = 1;
-            const simInterval = setInterval(() => {
-                document.getElementById('sim-day').textContent = day;
-                setTimelineDay(day - 1);
-                drawMiniMaps();
-
-                if (day >= 3) {
-                    clearInterval(simInterval);
-                    setTimeout(() => {
-                        badge.style.display = 'none';
-                        btn.classList.remove('simulating');
-                        btn.innerHTML = '✓ Simulation Complete — Rerun';
-                        document.getElementById('diff-pill').style.display = 'block';
-                        isSimulating = false;
-                        updateForecastChart();
-
-                        // Add news item
-                        const feed = document.getElementById('news-feed');
-                        const item = document.createElement('div');
-                        item.className = 'news-item info-news';
-                        item.innerHTML = `<div class="news-src">✅ SIMULATION COMPLETE</div>3-day counterfactual forecast ready — ${stateData[targetRegion]?.label || 'target'} impact assessed`;
-                        feed.insertBefore(item, feed.firstChild);
-                        setTimeout(() => btn.innerHTML = '▶ Run Digital Twin Simulation', 4000);
-                    }, 600);
-                }
-                day++;
-            }, 800);
+        // ─── CLOCK ─────────────────────────────────────────────────────────────
+        function updateClock() {
+            const now = new Date();
+            const ist = new Date(now.getTime() + ((5.5 * 60 - now.getTimezoneOffset()) * 60000));
+            document.getElementById('clock').textContent = ist.toUTCString().slice(-12, -4) + ' IST';
         }
+        updateClock(); setInterval(updateClock, 1000);
 
-        // ─── INITIAL STATE ───
-        updateSourceRegion();
+        // ─── INIT ──────────────────────────────────────────────────────────────
         updateLegend();
+        updateRiskBars();
+        updateImpacts();
+        setDay(0);
+
+        // map re-render on move
+        map.on('move zoom', () => {
+            updateMarkers();
+        });
+
     </script>
 </body>
 
