@@ -544,7 +544,8 @@ function drawCyclone(t) {
     ctx.fillStyle = '#FFE082';
     ctx.font = 'bold 10px Segoe UI';
     ctx.textAlign = 'center';
-    ctx.fillText('🌀 Cyclone — Bay of Bengal', cx, cy + 209);
+    const oceanName = isWestCoast ? "Arabian Sea" : "Bay of Bengal";
+ctx.fillText('🌀 Cyclone — ' + oceanName, cx, cy + 209);
     ctx.restore();
 
     // ── 5. Coastal impact — wavy surge lines on coast states ──
