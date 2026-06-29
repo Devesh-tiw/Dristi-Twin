@@ -55,7 +55,7 @@ async def lifespan(app: FastAPI):
         # Load Rainfall (High-Res 129x135 grid)
         # Change "Rainfall_" to exactly match how your rain files start
         CLIMATE_DATA['RAIN'] = load_imd_binary(DIR_RAIN, "Rainfall_", 129, 135)
-        
+
         # Matches files like: Maxtemp_MaxT_1951.GRD
         CLIMATE_DATA['TMAX'] = load_imd_binary(DIR_TMAX, "Maxtemp_MaxT_", 31, 31)
         
@@ -164,6 +164,7 @@ async def run_simulation(req: SimulationRequest):
    
     # 3. Formulate the JSON response to update your UI metrics
     # Note: FastAPI automatically serializes this Python dictionary into JSON for you!
+    # 3. Formulate the JSON response to update your UI metrics
     return {
         "status": "success",
         "engine": "ConvLSTM v3 Core",
@@ -172,16 +173,18 @@ async def run_simulation(req: SimulationRequest):
         "spatial_grid": simulated_grid,
         "analytics": {
             "riskProbabilities": {
-                "heatwave": 85 if req.currentScenario == 'heat' else (12 + req.tempDelta * 5),
-                "flood": 90 if req.currentScenario == 'rain' else (5 + (req.rainDelta // 2)),
-                "cyclone": 75 if req.currentScenario == 'cyclone' else (5 if req.windDelta > 50 else 0),
-                "coldwave": 80 if req.currentScenario == 'fog' else 8
+                # Base risk + slider impact (capped at a maximum of 99%)
+                "heatwave": min(99, int(75 + (req.tempDelta * 5))) if req.currentScenario == 'heat' else 12,
+                "flood": min(99, int(70 + (req.rainDelta * 0.5))) if req.currentScenario == 'rain' else 5,
+                "cyclone": min(99, int(60 + (req.windDelta * 0.5))) if req.currentScenario == 'cyclone' else 0,
+                "coldwave": min(99, int(75 - (req.tempDelta * 4))) if req.currentScenario == 'fog' else 8
             },
             "sectorImpacts": {
-                "agriculture": -18 if req.currentScenario == 'heat' else (15 if req.currentScenario == 'rain' else -5),
-                "waterResources": -25 if req.currentScenario == 'heat' else 40,
-                "energy": 22 if req.currentScenario == 'heat' else -10,
-                "health": -18 if req.currentScenario == 'heat' else -8
+                # Sector impacts also dynamically worsen as the anomaly increases
+                "agriculture": -min(45, int(18 + abs(req.tempDelta) * 2)) if req.currentScenario in ['heat', 'fog'] else (15 if req.currentScenario == 'rain' else -5),
+                "waterResources": -min(50, int(25 + abs(req.tempDelta) * 3)) if req.currentScenario == 'heat' else 40,
+                "energy": min(40, int(22 + abs(req.tempDelta) * 2)) if req.currentScenario == 'heat' else -10,
+                "health": -min(35, int(18 + abs(req.tempDelta) * 2)) if req.currentScenario in ['heat', 'fog'] else -8
             }
         }
     }
