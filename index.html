@@ -103,7 +103,7 @@
                         <span class="slider-label">🌡 Temperature Shock</span>
                         <span class="slider-val" id="tempVal">+0.0°C</span>
                     </div>
-                    <input type="range" id="tempSlider" min="-15" max="15" value="0"
+                    <input type="range" id="tempSlider" min="-150" max="150" value="0"
                         oninput="tempDelta=this.value/10; document.getElementById('tempVal').textContent=(tempDelta>=0?'+':'')+tempDelta.toFixed(1)+'°C'" />
                 </div>
                 <div class="slider-row">

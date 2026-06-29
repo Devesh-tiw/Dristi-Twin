@@ -877,33 +877,45 @@ function updateImpacts(apiData = null) {
 // ─── SIMULATION RUN ────────────────────────────────────────────────────
 function runSimulation() {
     if (simRunning) return;
-    if (!sourceRegion) { addNewsCard('⚠️ Please select a source region first.', 'info'); return; }
+    
+    // Safety check for source region validation
+    if (!sourceRegion) { 
+        addNewsCard('⚠️ Please select a source region first.', 'info'); 
+        return; 
+    }
     
     simRunning = true;
+    
+    // 1. Gather dynamic payload directly from DOM states
+    const currentTempSliderVal = parseFloat(document.getElementById('tempSlider').value) / 10;
+    const currentRainSliderVal = parseInt(document.getElementById('rainSlider').value) || 0;
+    const currentWindSliderVal = parseInt(document.getElementById('windSlider').value) || 0;
+    
     const btn = document.getElementById('runBtn');
     btn.classList.add('running');
     btn.innerHTML = '<span>⟳</span> Running ConvLSTM...';
+    
     const badge = document.getElementById('simBadge');
     badge.style.display = 'block';
 
-    // 1. FIRE THE FETCH REQUEST TO THE FASTAPI BACKEND (PORT 8000)
+    // 2. Dispatch the network payload to your FastAPI server
     fetch('http://127.0.0.1:8000/api/simulate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-            sourceRegion: sourceRegion,
-            targetRegion: targetRegion,
-            currentScenario: currentScenario,
-            tempDelta: parseFloat(tempDelta),
-            rainDelta: parseInt(rainDelta),
-            windDelta: parseInt(windDelta)
+            sourceRegion: selectedSource, 
+            targetRegion: selectedTarget,
+            currentScenario: activeScenario,
+            tempDelta: currentTempSliderVal,
+            rainDelta: currentRainSliderVal,
+            windDelta: currentWindSliderVal
         })
     })
     .then(res => res.json())
     .then(data => {
         console.log("Data received from FastAPI backend:", data);
 
-        // 2. Play the visual animation timer
+        // 3. Play the visual spatiotemporal step animation (5-day timeline loop)
         let day = 0;
         const interval = setInterval(() => {
             day++;
@@ -913,33 +925,51 @@ function runSimulation() {
                 clearInterval(interval);
                 simRunning = false;
                 simHasRun = true;
+                
                 btn.classList.remove('running');
                 btn.innerHTML = '<span>▶</span> Run Digital Twin Simulation';
                 badge.style.display = 'none';
                 document.getElementById('diffPill').style.display = 'block';
                 
-                // --- UI UPDATES WITH LIVE FASTAPI DATA ---
+                // --- 4. DATA ENGINE INJECTIONS ---
                 updateMarkers();
                 drawArrows(sourceRegion, targetRegion);
                 updateInfoBar();
                 
-                // Pass the real data from Python to the UI functions!
+                // Forward real IMD values to interface cards
                 updateRiskBars(data); 
                 updateImpacts(data);  
+                
+                // 🚨 UPDATE CHART.JS GRAPH DYNAMICALLY HERE 🚨
+                if (typeof myTemperatureChart !== "undefined" && myTemperatureChart !== null) {
+                    myTemperatureChart.data.datasets[1].data = [
+                        data.spatial_grid[0] && data.spatial_grid[0][0] ? data.spatial_grid[0][0][2] : 0,
+                        data.spatial_grid[1] && data.spatial_grid[1][0] ? data.spatial_grid[1][0][2] : 0,
+                        data.spatial_grid[2] && data.spatial_grid[2][0] ? data.spatial_grid[2][0][2] : 0,
+                        data.spatial_grid[3] && data.spatial_grid[3][0] ? data.spatial_grid[3][0][2] : 0,
+                        data.spatial_grid[4] && data.spatial_grid[4][0] ? data.spatial_grid[4][0][2] : 0
+                    ];
+                    myTemperatureChart.update(); // Re-renders line graph instantly
+                    console.log("📈 Line charts synced with live server telemetry.");
+                }
                 
                 drawRightPanel(); 
                 startAnimation();
                 
-                // News Cards
+                // --- 5. DYNAMIC NEWS GEN ENGINE ---
                 const srcLabel = stateData[sourceRegion]?.label || sourceRegion;
                 const tgtLabel = stateData[targetRegion]?.label || targetRegion;
-                const td = parseFloat(tempDelta) || 0;
                 
-                addNewsCard(`✅ Simulation complete. ${srcLabel} anomaly of ${(td >= 0 ? '+' : '') + td.toFixed(1)}°C propagated to ${tgtLabel} (${(td * 0.55).toFixed(1)}°C delta).`, currentScenario === 'heat' ? 'heat' : currentScenario === 'rain' ? 'rain' : currentScenario === 'cyclone' ? 'cyclone' : 'info');
-                if (currentScenario === 'heat' && td > 0.8) addNewsCard(`🔥 IMD Alert: Severe heatwave conditions likely in ${tgtLabel} within 48hrs.`, 'heat');
-                if (currentScenario === 'rain') addNewsCard(`🌧 IMD: Heavy rainfall advisory issued for ${tgtLabel} and adjoining districts.`, 'rain');
+                addNewsCard(`✅ Simulation complete. ${srcLabel} anomaly of ${(currentTempSliderVal >= 0 ? '+' : '') + currentTempSliderVal.toFixed(1)}°C propagated to ${tgtLabel} (${(currentTempSliderVal * 0.55).toFixed(1)}°C delta).`, activeScenario === 'heat' ? 'heat' : activeScenario === 'rain' ? 'rain' : activeScenario === 'cyclone' ? 'cyclone' : 'info');
+                
+                if (activeScenario === 'heat' && currentTempSliderVal > 0.8) {
+                    addNewsCard(`🔥 IMD Alert: Severe heatwave conditions likely in ${tgtLabel} within 48hrs.`, 'heat');
+                }
+                if (activeScenario === 'rain') {
+                    addNewsCard(`🌧 IMD: Heavy rainfall advisory issued for ${tgtLabel} and adjoining districts.`, 'rain');
+                }
             }
-        }, 600); // Faster visual delay for 5 days
+        }, 600); 
     })
     .catch(err => {
         console.error("Backend Error:", err);
@@ -999,3 +1029,7 @@ setDay(0);
 map.on('move zoom', () => {
     updateMarkers();
 });
+// Global slider listeners linked securely outside the simulation function runtime scope
+document.getElementById('tempSlider').addEventListener('change', runSimulation);
+document.getElementById('rainSlider').addEventListener('change', runSimulation);
+document.getElementById('windSlider').addEventListener('change', runSimulation);
